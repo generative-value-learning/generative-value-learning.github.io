@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="SpatialVLM: a visual language model from Google DeepMind that natively understand and reason about spatial relationships."
+    />
+    <meta
+      name="keywords"
+      content="VLM, spatial reasoning, Large Language Model, LLM, multimodal, visual language model, distance estimation"
+    />
+    <meta
+      property="og:image"
+      content="https://spatial-vlm.github.io/static/images/teaser2.png"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Generative Value Learning: Vision Language Models are In-Context Value Learners
+    </title>
+
+    <!--TWITTER TODO-->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Spatial Visual Language Model" />
+    <meta
+      name="twitter:description"
+      content="Generative Value Learning"
+    />
+    <meta
+      name="twitter:image"
+      content="https://spatial-vlm.github.io/static/images/teaser2.png"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./static/css/bulma.min.css" />
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css" />
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css" />
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"
+    />
+    <link rel="stylesheet" href="./static/css/index.css" />
+    <link rel="icon" href="./static/images/favicon.svg" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-1 publication-title">
+                Vision Language Models are  
+                In-Context Value Learners
+              </h1>
+              <div class="is-size-5 publication-authors">
+                <span class="author-block">
+                  <a href="https://jasonma2016.github.io/">Jason Ma</a
+                  ><sup>1,2,†</sup>,</span
+                >
+                <span class="author-block">
+                  <a href="http://joeyhejna.com/">Joey Hejna</a
+                  ><sup>1,3</sup>,</span
+                >
+                <span class="author-block">
+                  <a href="">Chuyuan Fu</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"></span>
+                  <a href="">Dhruv Shah</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"></span>
+                  <a href="">Jacky Liang</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"></span>
+                  <a href="">Zhuo Xu</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"></span>
+                  <a href="https://kirmani.ai/">Sean Kirmani</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"></span>
+                  <a href="">Peng Xu</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block">
+                  <a href="https://dannydriess.github.io/">Danny Driess</a
+                  ><sup>1</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="https://tedxiao.me/">Ted Xiao</a
+                  ><sup>1</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="https://obastani.github.io/">Osbert Bastani</a
+                  ><sup>2</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="https://www.seas.upenn.edu/~dineshj/">Dinesh Jayaraman</a
+                  ><sup>2</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="https://tedxiao.me/">Wenhao Yu</a
+                  ><sup>1</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="https://tedxiao.me/">Tingnan Zhang</a
+                  ><sup>1</sup>,
+                </span>
+                <span class="author-block">
+                  <a href="https://dorsa.fyi/">Dorsa Sadigh</a><sup>1,3</sup>,
+                </span>
+                <span class="author-block">
+                  <a href="https://fxia22.github.io/">Fei Xia</a><sup>1</sup>
+                </span>
+              </div>
+              <div>
+                <sup>†</sup> Work done while interning at Google DeepMind.
+              </div>
+
+              <br />
+              <div class="is-size-5 publication-authors">
+                <ul class="affiliation-list">
+                  <li class="affiliation">
+                    <img
+                      src="./static/images/deepmind.jpg"
+                      alt="DeepMind Logo"
+                      class="logo"
+                    />
+                    <span class="author-block"
+                      ><sup>1</sup>Google DeepMind</span
+                    >
+                  </li>
+                  <li class="affiliation">
+                    <img
+                      src="./static/images/penn.jpg"
+                      alt="Penn Logo"
+                      class="logo"
+                    />
+                    <span class="author-block"><sup>2</sup>University of Pennsylvania</span>
+                  </li>
+                  <li class="affiliation">
+                    <img
+                      src="./static/images/stanford.jpg"
+                      alt="Stanford Logo"
+                      class="logo"
+                    />
+                    <span class="author-block"
+                      ><sup>3</sup>Stanford University</span
+                    >
+                  </li>
+                </ul>
+                <br>
+                <!-- <p> <b>CVPR 2024 </b></p> -->
+              </div>
+              <br />
+              <div class="column has-text-centered">
+                <div class="publication-links">
+                  <!-- PDF Link. -->
+                  <span class="link-block">
+                    <a
+                      href="https://arxiv.org/abs/2401.12168"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                      </span>
+                      <span>Paper</span>
+                    </a>
+                  </span>
+                  <!-- Video Link. -->
+                  <span class="link-block">
+                    <a
+                      href="https://www.youtube.com/watch?v=_z9b5E_obbE"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fab fa-youtube"></i>
+                      </span>
+                      <span>Video</span>
+                    </a>
+                  </span>
+                  <!-- <span class="link-block">
+                    <a
+                      href="#community-implementation"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-code"></i>
+                      </span>
+                      <span>Code (3rd party)</span>
+                    </a>
+                  </span> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <!-- Abstract. -->
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3">Abstract</h2>
+            <div class="content has-text-justified">
+              Predicting temporal progress from visual trajectories is important for intelligent robots that can learn, adapt, and improve.
+              
+              However, learning such progress estimator, or temporal value function, across different tasks and domains requires both a large amount of diverse data and methods which can scale and generalize.
+              
+              To address these challenges, we present Generative Value Learning (GVL), a universal value function estimator that leverages the world knowledge embedded in vision-language models (VLMs) to predict task progress.
+              
+              Naively asking a VLM to predict values for a video sequence performs poorly due to the strong temporal correlation between successive frames. Instead, GVL poses value estimation as a temporal ordering problem over shuffled video frames; this seemingly more challenging task encourages VLMs to more fully exploit their underlying semantic and temporal grounding capabilities to differentiate frames based on their perceived task progress, consequently producing significantly better value predictions.
+              
+              Without any robot or task specific training, GVL can in-context zero-shot and few-shot predict effective values for more than 300 distinct real-world tasks across diverse robot platforms, including challenging bimanual manipulation tasks.
+              
+              Furthermore, we demonstrate that GVL permits flexible multi-modal in-context learning via examples from heterogeneous tasks and embodiments, such as human videos.
+              
+              The generality of GVL enables various downstream applications pertinent to visuomotor policy learning, including dataset filtering, success detection, and value-weighted regression -- all without any model training or finetuning.
+              <!--/ Abstract. -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="hr"></div>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-full-width has-text-justified">
+            <h2 class="title is-3 has-text-centered">
+              Limitations of multimodal LLMs
+            </h2>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/teaser.png"
+                class="inline-figure-six"
+                alt="Humans can perform spatial reasoning while VLMs doesn't."
+              />
+            </div>
+            <div class="content has-text-justified">
+              <p>
+                <b>Motivation:</b> Humans effortlessly determine spatial
+                relationships, such as the positioning of objects relative to
+                each other or estimating distances and sizes. This natural
+                proficiency in direct spatial reasoning tasks contrasts with the
+                current limitations of VLMs. Can we imbue VLMs with spatial
+                reasoning abilities akin to those of humans?
+              </p>
+            </div>
+            <h3 class="title is-4"></h3>
+            <div class="content has-text-justified">
+              <p>
+                <b>Key insight:</b> We hypothesize that the limited the spatial
+                reasoning abilities of current VLMs is not due to a fundamental
+                limitation of their architecture, but rather is a limitation in
+                common datasets available at scale on which such models are
+                trained. We co-train a multimodal large language model on
+                synthetic spatial data to investigate this hypothesis.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="hr"></div>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-full-width has-text-justified">
+            <h2 class="title is-3 has-text-centered">Method</h2>
+
+            <h3 class="title is-4">Data Synthesis</h3>
+            <div class="content has-text-justified">
+              <p>
+                We develop an automatic 3D spatial VQA data generation framework
+                that lifts 2D images into metric scale 3d point clouds. We
+                scales the data pipeline up to 2 billion VQA examples on 10
+                million real-world images.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/method.jpg"
+                class="inline-figure-six"
+                alt="data synthesis pipeline"
+              />
+            </div>
+            <h3 class="title is-4">Learning Direct Spatial Reasoning</h3>
+            <div class="content has-text-justified">
+              <p>
+                We then mix the synthesized data into the training set of a
+                multimodal large language model to train Spatial VLM. Such data
+                allows the model to answer intuitive spatial reasoning questions
+                such as the ones listed in the figure below. These elemental
+                abilities serves as the building block for more complex spatial
+                reasoning tasks such as those require multiple steps.
+              </p>
+              <p>
+                In the figure below, we listed some sample question & answer
+                pairs generated by our pipeline.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/dataset_sample.jpg"
+                class="inline-figure-six"
+                alt="Samples of the dataset."
+              />
+            </div>
+            <h3 class="title is-4">Chain-of-thought Spatial Reasoning</h3>
+            <div class="content has-text-justified">
+              <p>
+                With the ability to perform direct spatial reasoning like
+                humans, we can let SpatialVLM perform Chain-of-Thought Spatial
+                reasoning by letting it talk with with an LLM. As we will show
+                later in experiments section, the direct reasoning capabilities,
+                when combined with chain-of-thought reasoning can answer many
+                multi-step questions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="hr"></div>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-full-width has-text-justified">
+            <h2 class="title is-3 has-text-centered">Experiments</h2>
+
+            <div class="content has-text-justified">
+              <p>
+                Through extensive benchmark, we found our proposed framework can
+                significantly enhance the ability of visual language models in
+                performing different types of spatial reasoning like humans, as
+                well as unlocking novel downstream applications such as
+                robotics.
+              </p>
+            </div>
+            <h3 class="title is-4">Spatial VQA</h3>
+
+            <div class="content has-text-justified">
+              <p>
+                When prompted to answer free-form binary predicate prediction
+                question, such as which object is closer to the viewer,
+                SpatialVLM outperforms baselines on by a large margin owing to
+                the addition of synthetic data.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/qualitative_qa_samples.jpg"
+                class="inline-figure-six"
+                alt="qualitative spatial QA samples."
+              />
+              <img
+                src="./static/images/qualitative_table.png"
+                class="inline-figure-six"
+                alt="table for comparison with baselines"
+                height="auto"
+                width="800px"
+              />
+            </div>
+
+            <div class="content has-text-justified">
+              <p>
+                When finetuned with unfreezed image encoder, SpatialVLM can be
+                prompted to answer quantitative spatial estimation question,
+                such as the horizontal distances between objects. In particular,
+                SpatialVLM outputs valid format more often than baseline methods
+                when prompted to. In addition, SpatialVLM outputs quantitative
+                distance estimation that is closer to ground truth annotated by
+                human more often than baseline methods, with 37.2% of its
+                answers falling with in 0.5x-2x range of the ground truth.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/quantitative_qa_samples.jpg"
+                class="inline-figure-six"
+                alt="qualitative spatial QA samples."
+              />
+              <img
+                src="./static/images/quantitative_table.png"
+                class="inline-figure-six"
+                alt="Spatial VLM is able to perform quantitative spatial reasoning compared to baselines."
+                height="auto"
+                width="800px"
+              />
+            </div>
+
+            <h3 class="title is-4">Multi-step Spatial Reasoning</h3>
+            <div class="content has-text-justified">
+              <p>
+                In this example, with the help of an LLM orchestrating Spatial
+                VLM,the system is able to answer questions like “Does the blue
+                coke can, the red coke can, and the greensponge on the table
+                roughly form an equilateral triangle". This opens up future
+                opportunities to generate more complex spatial reasoning
+                questions and answers to train a unified multimodal large
+                lagnuage model.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/cot.jpg"
+                class="inline-figure-six"
+                alt="chain of thought spatial reasoning"
+              />
+            </div>
+
+            <h3 class="title is-4">Robotics</h3>
+            <div class="content has-text-justified">
+              <p>
+                Due to its ability to intuitively reason about space
+                quantiatively in real-world units, SpatialVLM can be used as a
+                fine-grained reward-annotator for robotics tasks. In the figure
+                below, SpatialVLM correctly assigns a monotonically decreasing
+                distance estimation for an robot hand approaching a coke can,
+                which can be used as a reward signal for reinforcement learning.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/fractal_move_curve.jpg"
+                class="inline-figure-four-thirds"
+                alt="Comparison with baselines."
+              />
+            </div>
+            <div class="content has-text-justified">
+              <p>
+                In the figure below, we show SpatialVLM can be prompted to
+                annotate dense rewards for open-vocabulary robotic tasks, unlike
+                many prior methods that can only annotate a binary label of
+                success or failure.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/reward_heatmap.jpg"
+                class="inline-figure-four-thirds"
+                alt="reward heatmap."
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="community-implementation">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-full-width has-text-justified">
+            <h2 class="title is-3 has-text-centered">Code (3rd Party Community Implementation)</h2>
+            <div class="content has-text-justified">
+              <p>
+                After releasing this paper, we were greeted with enthusiasm by the VLM research community. 
+                A shout-out to a user named remyxai for providing an open-source implementation of the data synthesis pipeline that closely follows our method. 
+                Check it out at: <a href="https://github.com/remyxai/VQASynth"> https://github.com/remyxai/VQASynth </a>
+
+                <div class="content has-text-centered">
+                  <a href="https://github.com/remyxai/VQASynth"> 
+                  <img
+                  src="https://raw.githubusercontent.com/remyxai/VQASynth/main/assets/VQASynth-diagram.png
+                    "
+                    class="inline-figure-four-thirds"
+                    alt="Comparison with baselines."
+                  />
+                </a>
+                </div>
+
+
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-full-width has-text-justified">
+            <h2 class="title is-3 has-text-centered">Acknowledgement</h2>
+            <div class="content has-text-justified">
+              <p>
+                TODO. 
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="hr"></div>
+
+    <section class="section" id="BibTeX">
+      <div class="container is-max-desktop content">
+        <h2 class="title has-text-centered">BibTeX</h2>
+        <pre><code>@preprint{ma2024generative,
+    author    = {Yecheng Jason Ma and Joey Hejna and Chuyuan Fu and Dhruv Shah and Jacky Liang and Zhuo Xu and Sean Kirmani and Peng Xu and Danny Driess and Ted Xiao and Osbert Bastani and Dinesh Jayaraman and Wenhao Yu and Tingnan Zhang and Dorsa Sadigh and Fei Xia},
+    title     = {Vision Language Models are In-Context Value Learners},
+    booktitle = {preprint},
+    year      = {2024}
+}</code></pre>
+
+
+    </section>
+  </body>
+</html>
