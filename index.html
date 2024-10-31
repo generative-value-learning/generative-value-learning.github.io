@@ -260,24 +260,19 @@
       window.onload = function() {
         const selector = document.getElementById('demoSelector');
         
-        // Use fetch to get list of files from interactive directory
-        fetch('./interactive')
-          .then(response => response.text())
-          .then(text => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(text, 'text/html');
-            const links = doc.getElementsByTagName('a');
-            
-            for (let link of links) {
-              if (link.href.endsWith('.html')) {
-                const option = document.createElement('option');
-                option.value = './interactive/' + link.href.split('/').pop();
-                option.text = link.href.split('/').pop().replace('.html', '');
-                selector.appendChild(option);
-              }
-            }
-          })
-          .catch(err => console.error('Error loading demos:', err));
+        // Hardcode the demo options since directory listing won't work on GitHub Pages
+        const demos = [
+          'overhead_cam_banana-handover_example1_final_v0_f21e990dc1904a919065b76a8a1119ae.html',
+          'worms_eye_cam_close-shoe-box_example1_final_v0_9b69cde58beb4b5d9442a57d01f4d17b.html'
+          // Add other demo filenames here
+        ];
+        
+        demos.forEach(demo => {
+          const option = document.createElement('option');
+          option.value = './interactive/' + demo;
+          option.text = demo.replace('.html', '');
+          selector.appendChild(option);
+        });
       }
     </script>
 
