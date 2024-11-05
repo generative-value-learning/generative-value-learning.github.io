@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Image API Interface</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        input, textarea {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background: #0066ff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background: #0052cc;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+        .error {
+            color: #dc2626;
+            display: none;
+            margin-top: 1rem;
+        }
+        #imagePreview {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 1rem;
+            display: none;
+            object-fit: contain;
+        }
+        .progress {
+            display: none;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gemini Image API Interface</h1>
+        
+        <div class="input-group">
+            <label for="apiKey">API Key:</label>
+            <input type="password" id="apiKey" placeholder="Enter your API key">
+        </div>
+
+        <div class="input-group">
+            <label for="imageInput">Upload Image:</label>
+            <input type="file" id="imageInput" accept="image/*">
+            <img id="imagePreview" alt="Preview">
+        </div>
+
+        <div class="input-group">
+            <label for="prompt">Question about the image:</label>
+            <textarea id="prompt" rows="4" placeholder="Ask a question about the uploaded image"></textarea>
+        </div>
+
+        <button id="submitBtn" onclick="sendRequest()" disabled>Get Response</button>
+
+        <div id="progress" class="progress">Processing request...</div>
+        <div id="error" class="error"></div>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const submitBtn = document.getElementById('submitBtn');
+        let imageBase64 = null;
+        let imageType = null;
+        
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                imageType = file.type;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    // Get base64 string without the data URL prefix
+                    imageBase64 = e.target.result.split(',')[1];
+                    submitBtn.disabled = false;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        async function sendRequest() {
+            const apiKey = document.getElementById('apiKey').value;
+            const prompt = document.getElementById('prompt').value;
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            const progressDiv = document.getElementById('progress');
+
+            if (!apiKey || !prompt || !imageBase64) {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Please provide API key, image, and prompt';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            resultDiv.textContent = '';
+            progressDiv.style.display = 'block';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [
+                                    {
+                                        text: prompt
+                                    },
+                                    {
+                                        inline_data: {
+                                            mime_type: imageType,
+                                            data: imageBase64
+                                        }
+                                    }
+                                ]
+                            }]
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error?.message || 'API request failed');
+                }
+
+                resultDiv.textContent = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response content';
+
+            } catch (error) {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = `Error: ${error.message}`;
+                resultDiv.textContent = '';
+            } finally {
+                progressDiv.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
