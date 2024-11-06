@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VOC Score Comparison</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<div id="correlation-plot"></div>
+
+<script>
+// Data points for GPT-4o and Gemini scores
+const data = {
+    'utokyo_pr2_opening_fridge_converted_externally_to_rlds': {gpt: 0.864, gemini: 0.8095},
+    'utokyo_xarm_bimanual_converted_externally_to_rlds': {gpt: 0.749, gemini: 0.7955},
+    'utokyo_xarm_pick_and_place_converted_externally_to_rlds': {gpt: 0.7665, gemini: 0.7880},
+    'fractal20220817_data': {gpt: 0.803, gemini: 0.7385},
+    'maniskill_dataset_converted_externally_to_rlds': {gpt: 0.499, gemini: 0.7260},
+    'berkeley_autolab_ur5': {gpt: 0.755, gemini: 0.7185},
+    'nyu_door_opening_surprising_effectiveness': {gpt: 0.883, gemini: 0.6685},
+    'utokyo_pr2_tabletop_manipulation_converted_externally_to_rlds': {gpt: 0.734, gemini: 0.5875},
+    'utaustin_mutex': {gpt: 0.813, gemini: 0.5810},
+    'iamlab_cmu_pickup_insert_converted_externally_to_rlds': {gpt: 0.557, gemini: 0.5585},
+    'fmb': {gpt: null, gemini: 0.5555},
+    'ucsd_kitchen_dataset_converted_externally_to_rlds': {gpt: 0.603, gemini: 0.5295},
+    'dobbe': {gpt: null, gemini: 0.5295},
+    'toto': {gpt: 0.713, gemini: 0.5270},
+    'bridge': {gpt: 0.6445, gemini: 0.5145},
+    'austin_sirius_dataset_converted_externally_to_rlds': {gpt: 0.7235, gemini: 0.5100},
+    'asu_table_top_converted_externally_to_rlds': {gpt: 0.5025, gemini: 0.5055},
+    'berkeley_rpt_converted_externally_to_rlds': {gpt: 0.6235, gemini: 0.4835},
+    'berkeley_cable_routing': {gpt: 0.255, gemini: 0.4470},
+    'usc_cloth_sim_converted_externally_to_rlds': {gpt: 0.5355, gemini: 0.4410},
+    'jaco_play': {gpt: 0.5615, gemini: 0.4205},
+    'bc_z': {gpt: 0.176, gemini: 0.4065},
+    'viola': {gpt: 0.4605, gemini: 0.4035},
+    'berkeley_mvp_converted_externally_to_rlds': {gpt: 0.8285, gemini: 0.3900},
+    'roboturk': {gpt: 0.57, gemini: 0.3545},
+    'austin_buds_dataset_converted_externally_to_rlds': {gpt: 0.454, gemini: 0.3415},
+    'stanford_hydra_dataset_converted_externally_to_rlds': {gpt: 0.205, gemini: 0.3325},
+    'tokyo_u_lsmo_converted_externally_to_rlds': {gpt: 0.3875, gemini: 0.3140},
+    'berkeley_fanuc_manipulation': {gpt: 0.6295, gemini: 0.2685},
+    'cmu_stretch': {gpt: 0.1895, gemini: 0.2625},
+    'ucsd_pick_and_place_dataset_converted_externally_to_rlds': {gpt: 0.2675, gemini: 0.2410},
+    'kuka': {gpt: 0.132, gemini: 0.1915},
+    'dlr_sara_pour_converted_externally_to_rlds': {gpt: 0.252, gemini: 0.1600},
+    'taco_play': {gpt: -0.2705, gemini: 0.0945},
+    'dlr_edan_shared_control_converted_externally_to_rlds': {gpt: 0.6595, gemini: 0.0855},
+    'droid': {gpt: null, gemini: -0.0060},
+    'stanford_robocook_converted_externally_to_rlds': {gpt: 0.16, gemini: -0.0690},
+    'imperialcollege_sawyer_wrist_cam': {gpt: 0.239, gemini: -0.1225},
+    'kaist_nonprehensile_converted_externally_to_rlds': {gpt: 0.492, gemini: -0.1310},
+    'austin_sailor_dataset_converted_externally_to_rlds': {gpt: 0.3015, gemini: -0.1715},
+    'cmu_play_fusion': {gpt: 0.4235, gemini: -0.3445},
+    'stanford_kuka_multimodal_dataset_converted_externally_to_rlds': {gpt: -0.1785, gemini: -0.3770},
+    'stanford_mask_vit_converted_externally_to_rlds': {gpt: -0.173, gemini: -0.4505},
+    'nyu_franka_play_dataset_converted_externally_to_rlds': {gpt: 0.1735, gemini: -0.4555},
+    'uiuc_d3field': {gpt: 0.5395, gemini: -0.7025},
+    'cmu_franka_exploration_dataset_converted_externally_to_rlds': {gpt: -0.2075, gemini: -0.7395},
+    'columbia_cairlab_pusht_real': {gpt: -0.1815, gemini: -0.7625},
+    'robo_net': {gpt: 0.237, gemini: -0.8485},
+    'dlr_sara_grid_clamp_converted_externally_to_rlds': {gpt: -1, gemini: -1.0000}
+};
+
+// Filter out null values and extract x and y values
+const filteredData = Object.entries(data).filter(([_, scores]) => scores.gpt !== null);
+const gptScores = filteredData.map(([_, scores]) => scores.gpt);
+const geminiScores = filteredData.map(([_, scores]) => scores.gemini);
+const labels = filteredData.map(([label, _]) => label);
+
+// Create scatter plot
+const trace = {
+    x: gptScores,
+    y: geminiScores,
+    mode: 'markers',
+    type: 'scatter',
+    text: labels,
+    hovertemplate: 
+        '<b>%{text}</b><br>' +
+        'GPT-4o: %{x:.3f}<br>' +
+        'Gemini: %{y:.3f}',
+    marker: {
+        size: 8,
+        color: 'rgb(31, 119, 180)',
+        opacity: 0.6
+    }
+};
+
+// Add diagonal line y=x
+const min = Math.min(Math.min(...gptScores), Math.min(...geminiScores));
+const max = Math.max(Math.max(...gptScores), Math.max(...geminiScores));
+const diagonalLine = {
+    x: [min, max],
+    y: [min, max],
+    mode: 'lines',
+    type: 'scatter',
+    line: {
+        color: 'rgba(200,200,200,0.5)',
+        dash: 'dash'
+    },
+    showlegend: false,
+    hoverinfo: 'none'
+};
+
+const layout = {
+    title: 'Correlation between GPT-4o and Gemini 1.5 Pro VOC Scores',
+    xaxis: {
+        title: 'GPT-4o VOC Score',
+        zeroline: false
+    },
+    yaxis: {
+        title: 'Gemini 1.5 Pro VOC Score',
+        zeroline: false
+    },
+    hovermode: 'closest',
+    width: 800,
+    height: 600,
+    margin: {
+        l: 60,
+        r: 30,
+        t: 50,
+        b: 50
+    }
+};
+
+Plotly.newPlot('correlation-plot', [trace, diagonalLine], layout);
+</script>
+
+</body>
+</html>
