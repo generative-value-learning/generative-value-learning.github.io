@@ -353,11 +353,8 @@
           <div class="column is-full-width has-text-justified">
             <h2 class="title is-3 has-text-centered">Interactive Demo</h2>
             <div class="content has-text-centered">
-              <select id="demoSelector" onchange="updateDemo()" style="margin-bottom: 20px; width: 300px;">
-              </select>
               <iframe 
-                id="demoFrame"
-                src="./interactive/overhead_cam_banana-handover_example1_final_v0_f21e990dc1904a919065b76a8a1119ae.html"
+                src="./interactive/json-frame-viewer.html"
                 width="100%" 
                 height="600px"
                 frameborder="0"
@@ -368,49 +365,6 @@
         </div>
       </div>
     </section>
-
-    <script>
-      function updateDemo() {
-        const selector = document.getElementById('demoSelector');
-        const frame = document.getElementById('demoFrame');
-        frame.src = selector.value;
-      }
-
-      function filterDemos() {
-        const input = document.getElementById('demoInput');
-        const filter = input.value.toLowerCase();
-        const selector = document.getElementById('demoSelector');
-        const options = selector.getElementsByTagName('option');
-        
-        for (let i = 0; i < options.length; i++) {
-          const txtValue = options[i].text;
-          if (txtValue.toLowerCase().indexOf(filter) > -1) {
-            options[i].style.display = "";
-          } else {
-            options[i].style.display = "none";
-          }
-        }
-      }
-
-      // Load demos on page load
-      window.onload = function() {
-        const selector = document.getElementById('demoSelector');
-        
-        // Hardcode the demo options since directory listing won't work on GitHub Pages
-        const demos = [
-          'overhead_cam_banana-handover_example1_final_v0_f21e990dc1904a919065b76a8a1119ae.html',
-          'worms_eye_cam_close-shoe-box_example1_final_v0_9b69cde58beb4b5d9442a57d01f4d17b.html'
-          // Add other demo filenames here
-        ];
-        
-        demos.forEach(demo => {
-          const option = document.createElement('option');
-          option.value = './interactive/' + demo;
-          option.text = demo.replace('.html', '');
-          selector.appendChild(option);
-        });
-      }
-    </script>
 
     <section class="section">
       <div class="container is-max-desktop">
