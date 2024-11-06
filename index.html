@@ -812,7 +812,6 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
               <option value="close-laptop">Close Laptop</option>
               <option value="open-jar-lid">Open Jar Lid</option>
             </select>
-            
             <div class="status-container">
               <div class="status success">Success</div>
               <div class="status fail">Fail</div>
@@ -837,6 +836,11 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
             taskSelect.addEventListener('change', (e) => {
               const task = e.target.value;
               demoVideo.src = `./static/videos/${task}/success.webm`;
+              // Reset status styling to success state when task changes
+              successStatus.style.background = '#000';
+              successStatus.style.color = 'white';
+              failStatus.style.background = 'white'; 
+              failStatus.style.color = 'black';
             });
 
             successStatus.addEventListener('click', () => {
@@ -1020,7 +1024,8 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                 <div class="gvl-demo-container">
                     <div class="gvl-flex-container">
                         <div class="gvl-instructions">
-                            <p>Upload a video enter your Gemini API key and task description, then first shuffle it, and "Get Response" to analyze the frames. 
+                          <p> This video does zero-shot video unshuffling and task progress estimation, following this paper.</p>
+                            <p>To try this demo, first upload a video enter your Gemini API key and task description, then first shuffle it, and "Get Response" to analyze the frames. 
                             </p>
                             <p>After receiving the response, you can click "Parse Response" to see the predicted task completion percentage for each frame. You can toggle back to GT order to examine the predicted value function as well as the caption.</p>
                         </div>
@@ -1051,6 +1056,7 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
             
                         <button id="gvl-submit-btn" onclick="sendRequest()" disabled class="gvl-button">Get Response (Running Gemini 1.5 Pro)</button>
                         <button id="gvl-parse-btn" onclick="parseResponse()" style="margin-top: 0.5rem;" disabled class="gvl-button">Parse Response</button>
+                        <button id="gvl-download-btn" onclick="downloadPrompt()" style="margin-top: 0.5rem;" disabled class="gvl-button">Download Prompt</button>
             
                         <div id="gvl-progress" class="gvl-progress">Processing request...</div>
                         <div id="gvl-error" class="gvl-error"></div>
@@ -1065,12 +1071,76 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                     const frameContainer = document.getElementById('gvl-frame-container');
                     const submitBtn = document.getElementById('gvl-submit-btn');
                     const parseBtn = document.getElementById('gvl-parse-btn');
+                    const downloadBtn = document.getElementById('gvl-download-btn');
                     const orderButtons = document.getElementById('gvl-order-buttons');
                     const plotContainer = document.getElementById('gvl-plot-container');
                     let imageBase64 = null;
                     let imageType = null;
                     let frames = [];
                     let isOrdered = true; // Start with GT order
+
+                    function preparePromptData() {
+                        const taskDescription = document.getElementById('gvl-task-description').value;
+                        const frameImages = Array.from(frameContainer.getElementsByTagName('img'));
+                        
+                        if (!taskDescription) {
+                            throw new Error('Please provide task description');
+                        }
+
+                        if (frameImages.length === 0) {
+                            throw new Error('Please provide video frames');
+                        }
+
+                        if (isOrdered) {
+                            throw new Error('Frames must be in shuffled order');
+                        }
+
+                        const promptText = `You are an expert roboticist tasked to predict task completion percentages for frames of a robot for the task of ${taskDescription}. The task completion percentages are between 0 and 100, where 100 corresponds to full task completion. We provide several examples of the robot performing the task at various stages and their corresponding task completion percentages. Note that these frames are in random order, so please pay attention to the individual frames when reasoning about task completion percentage.
+
+Initial robot scene:
+In the initial robot scene, the task completion percentage is 0.
+
+Now, for the task of *${taskDescription}*, output the task completion percentage for the following frames that are presented in random order. Format your response as follow in json format, make sure to include all frames:
+
+[
+{"frame_number": i, "frame_description": "...", "task_completion_percentage": (0-100)}
+]`;
+
+                        const parts = [{ text: promptText }];
+                        frameImages.forEach((frameImg, i) => {
+                            parts.push({
+                                text: `Frame ${i + 1}:`
+                            });
+                            parts.push({
+                                inline_data: {
+                                    mime_type: 'image/jpeg',
+                                    data: frameImg.src.split(',')[1]
+                                }
+                            });
+                        });
+
+                        return { promptText, parts };
+                    }
+
+                    function downloadPrompt() {
+                        try {
+                            const { promptText, parts } = preparePromptData();
+
+                            const blob = new Blob([JSON.stringify(parts, null, 2)], {type: 'application/json'});
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'prompt.json';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                        } catch (error) {
+                            const errorDiv = document.getElementById('gvl-error');
+                            errorDiv.style.display = 'block';
+                            errorDiv.textContent = `Error: ${error.message}`;
+                        }
+                    }
                     
                     function shuffleArray(array) {
                         for (let i = array.length - 1; i > 0; i--) {
@@ -1099,6 +1169,7 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                         // Enable/disable buttons based on order
                         submitBtn.disabled = isOrdered;
                         parseBtn.disabled = isOrdered;
+                        downloadBtn.disabled = isOrdered;
                     }
                     
                     function extractJSON(text) {
@@ -1198,6 +1269,7 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                                 isOrdered = true; // Start in GT order
                                 submitBtn.disabled = true;
                                 parseBtn.disabled = true;
+                                downloadBtn.disabled = true;
                                 
                                 const canvas = document.createElement('canvas');
                                 const context = canvas.getContext('2d');
@@ -1281,72 +1353,27 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                             reader.readAsDataURL(file);
                         }
                     });
+
                     async function sendRequest() {
                         const apiKey = document.getElementById('gvl-api-key').value;
-                        const taskDescription = document.getElementById('gvl-task-description').value;
                         const resultDiv = document.getElementById('gvl-result');
                         const errorDiv = document.getElementById('gvl-error');
                         const progressDiv = document.getElementById('gvl-progress');
-            
-                        if (!apiKey || !taskDescription) {
+
+                        if (!apiKey) {
                             errorDiv.style.display = 'block';
-                            errorDiv.textContent = 'Please provide API key and task description';
+                            errorDiv.textContent = 'Please provide API key';
                             return;
                         }
-            
-                        // Get all frame images in current order
-                        const frameImages = Array.from(frameContainer.getElementsByTagName('img'));
-                        if (frameImages.length === 0) {
-                            errorDiv.style.display = 'block';
-                            errorDiv.textContent = 'Please provide video frames';
-                            return;
-                        }
-            
-                        if (isOrdered) {
-                            errorDiv.style.display = 'block';
-                            errorDiv.textContent = 'Frames must be in shuffled order to get response';
-                            return;
-                        }
-            
+
                         errorDiv.style.display = 'none';
                         resultDiv.textContent = '';
                         progressDiv.style.display = 'block';
                         submitBtn.disabled = true;
-            
+
                         try {
-                            const prompt = `You are an expert roboticist tasked to predict task completion percentages for frames of a robot for the task of ${taskDescription}. The task completion percentages are between 0 and 100, where 100 corresponds to full task completion. We provide several examples of the robot performing the task at various stages and their corresponding task completion percentages. Note that these frames are in random order, so please pay attention to the individual frames when reasoning about task completion percentage.
-            
-            Initial robot scene:
-            In the initial robot scene, the task completion percentage is 0.
-            
-            Now, for the task of *${taskDescription}*, output the task completion percentage for the following frames that are presented in random order. Format your response as follow in json format, make sure to include all frames:
-            
-            [
-            {"frame_number": i, "frame_description": "...", "task_completion_percentage": (0-100)}
-            ]`;
-                            console.log(prompt);
-                            // Prepare parts array with prompt and all frames
-                            const parts = [
-                                {
-                                    text: prompt
-                                }
-                            ];
-                            console.log(prompt);
-            
-                            // Add all frames to parts array with frame number prefix
-                            frameImages.forEach((frameImg, i) => {
-                                parts.push({
-                                    text: `Frame ${i + 1}:`
-                                });
-                                parts.push({
-                                    inline_data: {
-                                        mime_type: 'image/jpeg',
-                                        data: frameImg.src.split(',')[1]
-                                    }
-                                });
-                            });
-            
-                            // Make single API request with all frames
+                            const { parts } = preparePromptData();
+
                             const response = await fetch(
                                 `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`,
                                 {
@@ -1361,16 +1388,16 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                                     })
                                 }
                             );
-            
+
                             const data = await response.json();
-            
+
                             if (!response.ok) {
                                 throw new Error(data.error?.message || 'API request failed');
                             }
-            
+
                             const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response';
                             resultDiv.textContent = responseText;
-            
+
                         } catch (error) {
                             errorDiv.style.display = 'block';
                             errorDiv.textContent = `Error: ${error.message}`;
@@ -1380,7 +1407,6 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                             submitBtn.disabled = isOrdered;
                         }
                     }
-            
                 </script>
             </body>
             </div>
