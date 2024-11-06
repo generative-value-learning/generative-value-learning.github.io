@@ -184,7 +184,7 @@
                 <p style="display: none;"><strong>Frame ID:</strong> <span id="frameId"></span></p>
                 <p style="display: none;"><strong>Number:</strong> <span id="frameNumber"></span></p>
                 <p style="display: none;"><strong>Order:</strong> <span id="frameOrder"></span></p>
-                <p><strong>Description:</strong> <span id="frameDescription"></span></p>
+                <p style="height: 3em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; cursor: pointer; transition: background-color 0.2s;" onmouseover="this.style.height='auto'; this.style.overflow='visible'; this.style['-webkit-line-clamp']='none'; this.style.backgroundColor='#f0f0f0';" onmouseout="this.style.height='3em'; this.style.overflow='hidden'; this.style['-webkit-line-clamp']='2'; this.style.backgroundColor='transparent';"><strong>Description:</strong> <span id="frameDescription"></span></p>
                 <div class="frame-image">
                     <img id="frameImage" alt="Frame">
                 </div>

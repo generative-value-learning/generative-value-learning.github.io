@@ -356,9 +356,10 @@
               <iframe 
                 src="./interactive/json-frame-viewer.html"
                 width="100%" 
-                height="600px"
+                style="min-height: 700px;"
                 frameborder="0"
-                scrolling="no">
+                scrolling="no"
+                onload="this.style.height=this.contentWindow.document.documentElement.scrollHeight+'px';">
               </iframe>
             </div>
           </div>
