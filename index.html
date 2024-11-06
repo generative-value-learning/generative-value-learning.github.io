@@ -1378,7 +1378,7 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                               <span style="color: #28a745;">Green numbers</span> show ground truth frame order. 
                               <span style="color: #dc3545;">Red numbers</span> show shuffled frame order.
                           </div>
-                          <input type="file" id="gvl-image-input" accept="video/*" capture="environment">
+                          <input type="file" id="gvl-image-input" accept="video/*" onclick="if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {alert('Sorry, this feature is not available on mobile devices.'); return false;}">
                           <img id="gvl-image-preview" alt="Preview">
                           <div id="gvl-frame-container" style="display: none; margin-top: 1rem;"></div>
                           <div class="gvl-order-buttons" id="gvl-order-buttons" style="display: none;">
@@ -1743,16 +1743,23 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
     </section>
 
     <div class="hr"></div>
-
     <section class="section" id="BibTeX">
       <div class="container is-max-desktop content">
         <h2 class="title has-text-centered">BibTeX</h2>
-        <pre><code>@preprint{ma2024generative,
-    author    = {Yecheng Jason Ma and Joey Hejna and Ayzaan Wahid and Chuyuan Fu and Dhruv Shah and Jacky Liang and Zhuo Xu and Sean Kirmani and Peng Xu and Danny Driess and Ted Xiao and Jonathan Tompson and Osbert Bastani and Dinesh Jayaraman and Wenhao Yu and Tingnan Zhang and Dorsa Sadigh and Fei Xia},
+        <pre style="width: 100%;"><code>@preprint{ma2024generative,
+    author    = {Ma, Yecheng Jason and Hejna, Joey and Wahid, Ayzaan and Fu, Chuyuan and Shah, Dhruv and Liang, Jacky and Xu, Zhuo and Kirmani, Sean and Xu, Peng and Driess, Danny and Xiao, Ted and Tompson, Jonathan and Bastani, Osbert and Jayaraman, Dinesh and Yu, Wenhao and Zhang, Tingnan and Sadigh, Dorsa and Xia, Fei},
     title     = {Vision Language Models are In-Context Value Learners},
     booktitle = {preprint},
     year      = {2024}
 }</code></pre>
+        <div class="has-text-left mt-2">
+          <button class="button is-small is-light" onclick="navigator.clipboard.writeText(document.querySelector('#BibTeX pre code').textContent)">
+            <span class="icon is-small">
+              <i class="fas fa-copy"></i>
+            </span>
+          </button>
+        </div>
+      </div>
 
 
     </section>
