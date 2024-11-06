@@ -52,14 +52,9 @@
     <script src="./static/js/bulma-slider.min.js"></script>
     <script src="./static/js/index.js"></script>
     <style>
-      /* body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 20px;
-        background: #ffffff;
-        color: #333333;
-      } */
+      * {
+        font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
       
       table {
         width: 100%;
@@ -298,12 +293,10 @@
                   </li>
                 </ul>
                 <br>
-                <!-- <p> <b>CVPR 2024 </b></p> -->
               </div>
               <br />
               <div class="column has-text-centered">
                 <div class="publication-links">
-                  <!-- PDF Link. -->
                   <span class="link-block">
                     <a
                       href="./gvl.pdf"
@@ -326,29 +319,6 @@
                       <span>Online Demo</span>
                     </a>
                   </span>
-                  <!-- Video Link. -->
-                  <!-- <span class="link-block">
-                    <a
-                      href="https://www.youtube.com/watch?v=_z9b5E_obbE"
-                      class="external-link button is-normal is-rounded is-dark"
-                    >
-                      <span class="icon">
-                        <i class="fab fa-youtube"></i>
-                      </span>
-                      <span>Video</span>
-                    </a>
-                  </span> -->
-                  <!-- <span class="link-block">
-                    <a
-                      href="#community-implementation"
-                      class="external-link button is-normal is-rounded is-dark"
-                    >
-                      <span class="icon">
-                        <i class="fas fa-code"></i>
-                      </span>
-                      <span>Code (3rd party)</span>
-                    </a>
-                  </span> -->
                 </div>
               </div>
             </div>
@@ -359,12 +329,11 @@
 
 
     <section id="json-frame-viewer" class="container">
-      <h2 class="title is-3 has-text-centered">Interactive illustration</h2>
+      <h2 class="title is-3 has-text-centered">Interactive Illustration</h2>
       <head>
           <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
           <style>
               #json-frame-viewer {
-                  font-family: Arial, sans-serif;
                   max-width: 1000px;
                   margin: 0 auto;
                   padding: 20px;
@@ -1003,47 +972,6 @@ dataset filtering, success detection, and policy learning.
                 <source src="./static/videos/concept.mp4" type="video/mp4">
               </video>
             </div>
-            <!-- <h3 class="title is-4">Zero-Shot Value Predictions on 300+ tasks, 20 embodiments, and 50 datasets</h3>
-            <div class="content has-text-justified">
-              <p>
-                TODO.
-              </p>
-            </div> -->
-            <!-- <div class="content has-text-centered">
-              <div class="columns is-centered">
-                <div class="column">
-                  <object
-                    data="./static/images/icv/icv_01_shot.pdf"
-                    type="application/pdf"
-                    class="inline-figure-six"
-                    alt="Samples of the dataset."
-                  >
-                    <p>Your browser does not support PDFs. Please download the PDF to view it.</p>
-                  </object>
-                </div>
-                <div class="column">
-                  <object
-                    data="./static/images/icv/icv_shots_average.pdf"
-                    type="application/pdf" 
-                    class="inline-figure-six"
-                    alt="Samples of the dataset."
-                  >
-                    <p>Your browser does not support PDFs. Please download the PDF to view it.</p>
-                  </object>
-                </div>
-              </div>
-            </div> -->
-            <!-- <h3 class="title is-4">Chain-of-thought Spatial Reasoning</h3>
-            <div class="content has-text-justified">
-              <p>
-                With the ability to perform direct spatial reasoning like
-                humans, we can let SpatialVLM perform Chain-of-Thought Spatial
-                reasoning by letting it talk with with an LLM. As we will show
-                later in experiments section, the direct reasoning capabilities,
-                when combined with chain-of-thought reasoning can answer many
-                multi-step questions.
-              </p>
-            </div> -->
           </div>
         </div>
       </div>
@@ -1386,7 +1314,7 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
         <h3 class="title is-4">Qualitative Results</h3>
         <div class="content has-text-justified">
           <p>
-            We show qualitative results on several robotic manipulation tasks below. For each task, we show both successful and failed attempts.
+            We show qualitative results on several robotic manipulation tasks below trained with Advantage-Weighted Regression. For each task, we show both successful and failed attempts.
           
          
 
@@ -1482,7 +1410,7 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
               <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
               <style>
                   .gvl-demo-container {
-                      font-family: system-ui, sans-serif;
+                      font-family: 'Google Sans', 'Noto Sans', 'Castoro', sans-serif;
                       max-width: 1000px;
                       margin: 2rem auto;
                       padding: 1rem;
