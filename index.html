@@ -12,7 +12,7 @@
     />
     <meta
       property="og:image"
-      content="./static/images/icv/method.png"
+      content="https://generative-value-learning.github.io/static/images/icv/method.png"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>
@@ -27,7 +27,7 @@
     />
     <meta
       name="twitter:image"
-      content="./static/images/icv/method.png"
+      content="https://generative-value-learning.github.io/static/images/icv/method.png"
     />
 
     <link
@@ -247,11 +247,11 @@
                   ><sup>2</sup>,
                 </span>
                 <span class="author-block"></span>
-                  <a href="https://tedxiao.me/">Wenhao Yu</a
+                  <a href="#">Wenhao Yu</a
                   ><sup>1</sup>,
                 </span>
                 <span class="author-block"></span>
-                  <a href="https://tedxiao.me/">Tingnan Zhang</a
+                  <a href="#">Tingnan Zhang</a
                   ><sup>1</sup>,
                 </span>
                 <span class="author-block">
@@ -359,6 +359,7 @@
 
 
     <section id="json-frame-viewer" class="container">
+      <h2 class="title is-3 has-text-centered">Interactive illustration</h2>
       <head>
           <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
           <style>
@@ -1094,14 +1095,6 @@ chronological order of the input expert video:
                 the trajectories should not be monotonic, resulting in low correlation with the ground-truth timestep
                 order.              </p>
             </div>
-            <h3 class="title is-4">Zero-Shot Value Predictions on 300+ tasks, 20 embodiments, and 50 datasets</h3>
-
-            <div class="content has-text-justified">
-              <p>
-TODO.
-              </p>
-            </div>
-
           
             <h3 class="title is-4">GVL Demonstrates Multi-Modal In-Context Learning Capabilities</h3>
 
@@ -1162,42 +1155,66 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                 number of suboptimal trajectories that do not exhibit smooth temporal structure to be re-shuffled.
               </p>
             </div>
-            <div class="content has-text-centered">
-             
-              <table>
-                <thead>
-                  <tr>
-                    <th>Dataset</th>
-                    <th style="text-align: right">Avg. VOC</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><span class="dataset-name">RT-1</span> <span class="citation">(Brohan et al., 2022)</span></td>
-                    <td class="metric">0.74</td>
-                  </tr>
-                  <tr>
-                    <td><span class="dataset-name">Dobb-E</span> <span class="citation">(Shafiullah et al., 2023)</span></td>
-                    <td class="metric">0.53</td>
-                  </tr>
-                  <tr>
-                    <td><span class="dataset-name">Bridge</span> <span class="citation">(Walke et al., 2023)</span></td>
-                    <td class="metric">0.51</td>
-                  </tr>
-                  <tr>
-                    <td><span class="dataset-name">QT-OPT</span> <span class="citation">(Kalashnikov et al., 2018)</span></td>
-                    <td class="metric">0.19</td>
-                  </tr>
-                  <tr>
-                    <td><span class="dataset-name">DROID</span> <span class="citation">(Khazatsky et al., 2024)</span></td>
-                    <td class="metric">-0.01</td>
-                  </tr>
-                  <tr>
-                    <td><span class="dataset-name">RoboNet</span> <span class="citation">(Dasari et al., 2019)</span></td>
-                    <td class="metric">-0.85</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="columns">
+              <div class="column is-half">
+                <div class="content has-text-centered">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Dataset</th>
+                        <th style="text-align: right">Avg. VOC</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><span class="dataset-name">RT-1</span> <span class="citation">(<a href="https://arxiv.org/abs/2212.06817">Brohan et al., 2022</a>)</span></td>
+                        <td class="metric">0.74</td>
+                      </tr>
+                      <tr>
+                        <td><span class="dataset-name">Dobb-E</span> <span class="citation">(<a href="https://arxiv.org/abs/2311.16098">Shafiullah et al., 2023</a>)</span></td>
+                        <td class="metric">0.53</td>
+                      </tr>
+                      <tr>
+                        <td><span class="dataset-name">Bridge</span> <span class="citation">(<a href="https://arxiv.org/abs/2308.12952">Walke et al., 2023</a>)</span></td>
+                        <td class="metric">0.51</td>
+                      </tr>
+                      <tr>
+                        <td><span class="dataset-name">QT-OPT</span> <span class="citation">(<a href="https://arxiv.org/abs/1806.10293">Kalashnikov et al., 2018</a>)</span></td>
+                        <td class="metric">0.19</td>
+                      </tr>
+                      <tr>
+                        <td><span class="dataset-name">DROID</span> <span class="citation">(<a href="https://arxiv.org/abs/2403.12945">Khazatsky et al., 2024</a>)</span></td>
+                        <td class="metric">-0.01</td>
+                      </tr>
+                      <tr>
+                        <td><span class="dataset-name">RoboNet</span> <span class="citation">(<a href="https://arxiv.org/abs/1910.11215">Dasari et al., 2019</a>)</span></td>
+                        <td class="metric">-0.85</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="column is-half">
+                <div id="vocPlot"></div>
+                <script>
+                  const data = [{
+                    x: ['RT-1', 'Dobb-E', 'Bridge', 'QT-OPT', 'DROID', 'RoboNet'],
+                    y: [0.74, 0.53, 0.51, 0.19, -0.01, -0.85],
+                    type: 'bar',
+                    marker: {
+                      color: ['#1f77b4', '#1f77b4', '#1f77b4', '#ff7f0e', '#ff7f0e', '#ff7f0e']
+                    }
+                  }];
+                  const layout = {
+                    title: 'Dataset VOC Scores',
+                    xaxis: {title: 'Dataset'},
+                    yaxis: {title: 'Avg. VOC Score'},
+                    margin: {t: 30},
+                    height: 300
+                  };
+                  Plotly.newPlot('vocPlot', data, layout);
+                </script>
+              </div>
             </div>
 
             <h3 class="title is-4">Success Detection and Filtered BC</h3>
@@ -1232,7 +1249,7 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                       <td class="metric">0.70</td>
                     </tr>
                     <tr>
-                      <td class="method-name">SuccessVQA <span class="citation">(Du et al., 2023)</span></td>
+                      <td class="method-name">SuccessVQA <span class="citation">(<a href="https://arxiv.org/abs/2303.07280">Du et al., 2023</a>)</span></td>
                       <td class="metric">0.62</td>
                       <td class="metric">0.33</td>
                       <td class="metric">0.73</td>
@@ -1437,7 +1454,7 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
       
     </section>
 
-  <section class="section">
+  <section class="section" id="online-demo">
       <div class="container">
         <div class="columns is-centered">
           <div class="column is-full-width has-text-justified">
