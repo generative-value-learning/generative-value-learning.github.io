@@ -18,7 +18,7 @@
                 <progress class="progress is-small is-primary" max="100">15%</progress>
               </div>
               <div id="questionError" class="notification is-danger" style="display: none;"></div>
-              <div id="questionResult" class="box content"></div>
+              <div id="questionResult" class="box content markdown-body"></div>
             </div>
           </div>
         </div>
@@ -26,6 +26,11 @@
     </section>
 
     <script>
+      // Add marked.js for markdown rendering
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
+      document.head.appendChild(script);
+
       async function askAboutPaper() {
         const questionDiv = document.getElementById('paperQuestion');
         const progressDiv = document.getElementById('questionProgress');
@@ -42,7 +47,7 @@
         try {
           progressDiv.style.display = 'block';
           errorDiv.style.display = 'none';
-          resultDiv.textContent = '';
+          resultDiv.innerHTML = '';
           askButton.disabled = true;
 
           const pageContent = document.documentElement.innerText;
@@ -57,7 +62,7 @@
             return;
           }
           const parts = [{
-            text: `Context about the paper:\n${pageContent}\n\nQuestion: ${questionDiv.value}\n\nPlease answer the question based on the paper content provided above.`
+            text: `Context about the paper:\n${pageContent}\n\nQuestion: ${questionDiv.value}\n\nPlease answer the question based on the paper content provided above. You can use markdown formatting in your response.`
           }];
           console.log('Parts:', parts);
 
@@ -79,6 +84,7 @@
           const reader = response.body.getReader();
           const decoder = new TextDecoder();
           let buffer = '';
+          let fullResponse = '';
 
           while (true) {
             const {value, done} = await reader.read();
@@ -97,7 +103,9 @@
                 try {
                   const parsed = JSON.parse(data);
                   const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                  resultDiv.textContent += text;
+                  fullResponse += text;
+                  // Render markdown as it streams in
+                  resultDiv.innerHTML = marked.parse(fullResponse);
                 } catch (e) {
                   console.error('Error parsing SSE message:', e);
                 }
@@ -108,7 +116,7 @@
         } catch (error) {
           errorDiv.style.display = 'block';
           errorDiv.textContent = `Error: ${error.message}`;
-          resultDiv.textContent = '';
+          resultDiv.innerHTML = '';
         } finally {
           progressDiv.style.display = 'none';
           askButton.disabled = false;
