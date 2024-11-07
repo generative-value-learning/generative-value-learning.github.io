@@ -1637,7 +1637,7 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                                 <span style="color: #28a745;">Green numbers</span> show ground truth frame order. 
                                 <span style="color: #dc3545;">Red numbers</span> show shuffled frame order.
                             </div>
-                            <input type="file" id="gvl-image-input" accept="video/*">
+                            <input type="file" id="gvl-image-input" accept="video/*" onchange="if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){alert('Mobile uploads are not supported. Please use a desktop browser.'); this.value=''; return false;}">
                             <img id="gvl-image-preview" alt="Preview">
                             <div id="gvl-frame-container" style="display: none; margin-top: 1rem;"></div>
                             <div class="gvl-order-buttons" id="gvl-order-buttons" style="display: none;">
@@ -1670,8 +1670,8 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                     let isOrdered = true; // Start with GT order
 
                     async function loadExampleVideo(type) {
-                        const videoPath = type === 'dress' ? './static/examples/dress.webm' : './static/examples/glass_on_rack.mp4';
-                        const fileName = type === 'dress' ? 'dress.webm' : 'glass_on_rack.mp4';
+                        const videoPath = type === 'dress' ? './static/examples/dress.webm' : './static/examples/glass_on_rack.webm';
+                        const fileName = type === 'dress' ? 'dress.webm' : 'glass_on_rack.webm';
                         const taskDesc = type === 'dress' ? 
                             'Fold the black dress into a small square' : 
                             'Place the glass on the drying rack';
