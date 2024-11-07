@@ -500,32 +500,54 @@
                             errorDiv.textContent = 'Frames must be in shuffled order to get response';
                             return;
                         }
+
+                        // Find which frame has ground truth frame id 1
+                        let initialFrameIndex = -1;
+                        const frameNumbers = Array.from(frameContainer.getElementsByClassName('gvl-frame-number'));
+                        frameNumbers.forEach((frameNumber, index) => {
+                            if (frameNumber.textContent === '1') {
+                                initialFrameIndex = index;
+                            }
+                        });
             
                         errorDiv.style.display = 'none';
                         resultDiv.textContent = '';
                         progressDiv.style.display = 'block';
                         submitBtn.disabled = true;
-            
                         try {
-                            const prompt = `You are an expert roboticist tasked to predict task completion percentages for frames of a robot for the task of ${taskDescription}. The task completion percentages are between 0 and 100, where 100 corresponds to full task completion. We provide several examples of the robot performing the task at various stages and their corresponding task completion percentages. Note that these frames are in random order, so please pay attention to the individual frames when reasoning about task completion percentage.
-            
-            Initial robot scene:
-            In the initial robot scene, the task completion percentage is 0.
-            
-            Now, for the task of *${taskDescription}*, output the task completion percentage for the following frames that are presented in random order. Format your response as follow in json format, make sure to include all frames:
-            
-            [
-            {"frame_number": i, "frame_description": "...", "task_completion_percentage": (0-100)}
-            ]`;
-                            console.log(prompt);
-                            // Prepare parts array with prompt and all frames
+                            const prompt1 = `You are an expert roboticist tasked to predict task completion percentages for frames of a robot for the task of ${taskDescription}. The task completion percentages are between 0 and 100, where 100 corresponds to full task completion. We provide several examples of the robot performing the task at various stages and their corresponding task completion percentages. Note that these frames are in random order, so please pay attention to the individual frames when reasoning about task completion percentage.
+Initial robot scene:
+This frame:`;
+
+                            const prompt2 = ` shows the initial robot scene, where the task completion percentage is 0.
+
+Now, for the task of *${taskDescription}*, output the task completion percentage for the following frames that are presented in random order. Format your response as follow in json format, make sure to include all frames:
+
+[
+{"frame_number": i, "frame_description": "...", "task_completion_percentage": (0-100)}
+]`;
+
+                            console.log(prompt1 + prompt2);
+                            // Prepare parts array with prompts and initial frame
                             const parts = [
                                 {
-                                    text: prompt
+                                    text: prompt1
                                 }
                             ];
-                            console.log(prompt);
-            
+
+                            // Add initial frame image
+                            parts.push({
+                                inline_data: {
+                                    mime_type: 'image/jpeg',
+                                    data: frameImages[initialFrameIndex].src.split(',')[1]
+                                }
+                            });
+
+                            // Add second part of prompt
+                            parts.push({
+                                text: prompt2
+                            });
+
                             // Add all frames to parts array with frame number prefix
                             frameImages.forEach((frameImg, i) => {
                                 parts.push({
