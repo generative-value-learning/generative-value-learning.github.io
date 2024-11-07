@@ -319,6 +319,18 @@
                       <span>Online Demo</span>
                     </a>
                   </span>
+                  <span class="link-block">
+                    <a
+                      onclick="document.getElementById('audio-player').play()"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-headphones"></i>
+                      </span>
+                      <span>Listen to this paper</span>
+                    </a>
+                  </span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -326,6 +338,9 @@
         </div>
       </div>
     </section>
+    <div> <audio id="audio-player" style="display:none">
+      <source src="static/gvl.mp3" type="audio/wav">
+    </audio></div>
     [[frame-viewer]]
 
     <section class="section">
