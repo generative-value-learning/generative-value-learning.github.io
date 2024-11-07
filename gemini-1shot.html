@@ -160,6 +160,15 @@
                             </p>
                             <p>After receiving the response, you can click "Parse Response" to see the predicted task completion percentage for each frame of query video. You can toggle back to GT order to examine the predicted value function as well as the caption.</p>
                         </div>
+                        <div style="display: flex; justify-content: center; gap: 1rem; margin: 1rem 0;">
+                            <div style="position: relative; display: inline-block; cursor: pointer;" onclick="loadExampleVideo()">
+                                <img src="./static/examples/marker_cap.png" style="max-width: 300px;">
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                            background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;">
+                                    Remove Cap of Marker Example
+                                </div>
+                            </div>
+                        </div>
                         <div class="gvl-input-group">
                             <label for="gvl-api-key">API Key: <a href="https://aistudio.google.com/app/u/1/apikey" target="_blank" style="font-size: 0.8em;">(Get API key here)</a></label>
                             <input type="password" id="gvl-api-key" class="gvl-input" placeholder="Enter your API key">
@@ -272,6 +281,39 @@
                         }
             
                         return null;
+                    }
+
+                    async function loadExampleVideo() {
+                        const referenceVideoPath = './static/examples/marker_cap1.webm';
+                        const queryVideoPath = './static/examples/marker_cap2.webm';
+                        const taskDesc = 'Remove the cap of the marker';
+                            
+                        // Load reference video
+                        const refResponse = await fetch(referenceVideoPath);
+                        const refBlob = await refResponse.blob();
+                        const refFile = new File([refBlob], 'marker_cap1.webm', { type: 'video/webm' });
+                        
+                        // Load query video
+                        const queryResponse = await fetch(queryVideoPath);
+                        const queryBlob = await queryResponse.blob();
+                        const queryFile = new File([queryBlob], 'marker_cap2.webm', { type: 'video/webm' });
+
+                        // Create DataTransfer objects and add files
+                        const refDataTransfer = new DataTransfer();
+                        refDataTransfer.items.add(refFile);
+                        const queryDataTransfer = new DataTransfer();
+                        queryDataTransfer.items.add(queryFile);
+                        
+                        // Set the files property of the input elements
+                        referenceVideoInput.files = refDataTransfer.files;
+                        queryVideoInput.files = queryDataTransfer.files;
+                        
+                        // Trigger change events
+                        referenceVideoInput.dispatchEvent(new Event('change'));
+                        queryVideoInput.dispatchEvent(new Event('change'));
+                        
+                        // Set the task description
+                        document.getElementById('gvl-task-description').value = taskDesc;
                     }
             
                     function parseResponse() {
@@ -527,9 +569,9 @@
                                 });
                             });
 
-                            // Make single API request with all frames
+                            // Create EventSource for streaming response
                             const response = await fetch(
-                                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`,
+                                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:streamGenerateContent?alt=sse&key=${apiKey}`,
                                 {
                                     method: 'POST',
                                     headers: {
@@ -542,16 +584,37 @@
                                     })
                                 }
                             );
-            
-                            const data = await response.json();
-            
-                            if (!response.ok) {
-                                throw new Error(data.error?.message || 'API request failed');
+
+                            const reader = response.body.getReader();
+                            const decoder = new TextDecoder();
+                            let buffer = '';
+
+                            while (true) {
+                                const {value, done} = await reader.read();
+                                if (done) break;
+                                
+                                buffer += decoder.decode(value, {stream: true});
+                                
+                                // Process complete SSE messages
+                                const lines = buffer.split('\n');
+                                buffer = lines.pop() || '';
+                                
+                                for (const line of lines) {
+                                    if (line.startsWith('data: ')) {
+                                        const data = line.slice(5);
+                                        if (data === '[DONE]') continue;
+                                        
+                                        try {
+                                            const parsed = JSON.parse(data);
+                                            const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                                            resultDiv.textContent += text;
+                                        } catch (e) {
+                                            console.error('Error parsing SSE message:', e);
+                                        }
+                                    }
+                                }
                             }
-            
-                            const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response';
-                            resultDiv.textContent = responseText;
-            
+
                         } catch (error) {
                             errorDiv.style.display = 'block';
                             errorDiv.textContent = `Error: ${error.message}`;
