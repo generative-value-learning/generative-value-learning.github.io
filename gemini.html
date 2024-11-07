@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+
     <section class="section" id="online-demo">
         <div class="container">
           <div class="columns is-centered">
@@ -175,6 +174,23 @@
                             <p>Upload a video enter your Gemini API key and task description, then first shuffle it, and "Get Response" to analyze the frames. 
                             </p>
                             <p>After receiving the response, you can click "Parse Response" to see the predicted task completion percentage for each frame. You can toggle back to GT order to examine the predicted value function as well as the caption.</p>
+                            <p>Or click one of the examples below to try:</p>
+                            <div style="display: flex; gap: 20px; justify-content: center;">
+                                <div style="position: relative; display: inline-block; cursor: pointer;" onclick="loadExampleVideo('dress')">
+                                    <img src="./static/examples/dress.png" style="max-width: 300px;">
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                                background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;">
+                                        Folding Dress Example
+                                    </div>
+                                </div>
+                                <div style="position: relative; display: inline-block; cursor: pointer;" onclick="loadExampleVideo('glass')">
+                                    <img src="./static/examples/glass_on_rack.png" style="max-width: 300px;">
+                                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                                background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;">
+                                        Glass on Rack Example
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="gvl-input-group">
                             <label for="gvl-api-key">API Key: <a href="https://aistudio.google.com/app/u/1/apikey" target="_blank" style="font-size: 0.8em;">(Get API key here)</a></label>
@@ -223,7 +239,31 @@
                     let imageType = null;
                     let frames = [];
                     let isOrdered = true; // Start with GT order
-                    
+
+                    async function loadExampleVideo(type) {
+                        const videoPath = type === 'dress' ? './static/examples/dress.webm' : './static/examples/glass_on_rack.mp4';
+                        const fileName = type === 'dress' ? 'dress.webm' : 'glass_on_rack.mp4';
+                        const taskDesc = type === 'dress' ? 
+                            'Fold the black dress into a small square' : 
+                            'Place the glass on the drying rack';
+                            
+                        const response = await fetch(videoPath);
+                        const blob = await response.blob();
+                        const file = new File([blob], fileName, { type: 'video/webm' });
+                        
+                        // Create a new DataTransfer object and add the file
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        
+                        // Set the files property of the input element
+                        imageInput.files = dataTransfer.files;
+                        
+                        // Trigger the change event
+                        imageInput.dispatchEvent(new Event('change'));
+                        
+                        // Set the task description
+                        document.getElementById('gvl-task-description').value = taskDesc;
+                    }
                     function shuffleArray(array) {
                         for (let i = array.length - 1; i > 0; i--) {
                             const j = Math.floor(Math.random() * (i + 1));
@@ -561,4 +601,3 @@
           </div>
         </div>
     </section>  
-</html>

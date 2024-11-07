@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Generative Value Learning: Vision Language Models are In-Context Value Learners"
+    />
+    <meta
+      name="keywords"
+      content="GVL, value learning, vision language models, VLM, robotics, reinforcement learning"
+    />
+    <meta
+      property="og:image"
+      content="https://generative-value-learning.github.io/static/images/icv/method.png"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Generative Value Learning: Vision Language Models are In-Context Value Learners
+    </title>
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Generative Value Learning" />
+    <meta
+      name="twitter:description"
+      content="Vision Language Models are In-Context Value Learners"
+    />
+    <meta
+      name="twitter:image"
+      content="https://generative-value-learning.github.io/static/images/icv/method.png"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./static/css/bulma.min.css" />
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css" />
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css" />
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"
+    />
+    <link rel="stylesheet" href="./static/css/index.css" />
+    <link rel="icon" href="./static/images/favicon.svg" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+    <style>
+      * {
+        font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 15px;
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+      
+      th {
+        border-top: 1.5px solid #000;
+        border-bottom: 1.5px solid #000;
+        padding: 12px 24px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 16px;
+      }
+      
+      td {
+        padding: 12px 24px;
+      }
+      
+      tr:last-child td {
+        border-bottom: 1.5px solid #000;
+      }
+      
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+      
+      .method-group {
+        border-bottom: 1.5px solid #000;
+      }
+      
+      .dataset-name, .method-name {
+        font-weight: 500;
+      }
+      
+      .citation {
+        color: #FF69B4;
+      }
+      
+      .metric {
+        text-align: right;
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
+      }
+      
+      .bold-metric {
+        font-weight: bold;
+      }
+      
+      .year {
+        color: #666;
+      }
+      
+      .sub-method {
+        padding-left: 24px;
+      }
+
+      .demo-container {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+      .task-select {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #000;
+        background: white;
+        appearance: none;
+        position: relative;
+        cursor: pointer;
+        box-shadow: 2px 2px 0px 0px #000;
+      }
+      
+      .status-container {
+        flex: 1;
+        border: 2px solid #000;
+        display: flex;
+        overflow: hidden;
+      }
+      
+      .status {
+        flex: 1;
+        padding: 12px;
+        text-align: center;
+      }
+      
+      .success {
+        background: #000;
+        color: white;
+      }
+      
+      .fail {
+        background: white;
+        color: black;
+      }
+      
+      .video-area {
+        width: 80%;
+        margin: 0 auto;
+        background: #e0e0e0;
+        border: 2px solid #000;
+        position: relative;
+      }
+      .video-overlay {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-1 publication-title">
+                Vision Language Models are  
+                In-Context Value Learners
+              </h1>
+              <div class="is-size-5 publication-authors">
+                <span class="author-block">
+                  <a href="https://jasonma2016.github.io/">Jason Ma</a
+                  ><sup>1,2,†</sup>,</span
+                >
+                <span class="author-block">
+                  <a href="http://joeyhejna.com/">Joey Hejna</a
+                  ><sup>1,3</sup>,</span
+                >
+                <span class="author-block">
+                  <a href="">Ayzaan Wahid</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block">
+                  <a href="">Chuyuan Fu</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"></span>
+                  <a href="">Dhruv Shah</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"></span>
+                  <a href="">Jacky Liang</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"></span>
+                  <a href="">Zhuo Xu</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"></span>
+                  <a href="https://kirmani.ai/">Sean Kirmani</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"></span>
+                  <a href="">Peng Xu</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block">
+                  <a href="https://dannydriess.github.io/">Danny Driess</a
+                  ><sup>1</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="https://tedxiao.me/">Ted Xiao</a
+                  ><sup>1</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="https://jonathantompson.github.io/">Jonathan Tompson</a
+                  ><sup>1</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="https://obastani.github.io/">Osbert Bastani</a
+                  ><sup>2</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="https://www.seas.upenn.edu/~dineshj/">Dinesh Jayaraman</a
+                  ><sup>2</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="#">Wenhao Yu</a
+                  ><sup>1</sup>,
+                </span>
+                <span class="author-block"></span>
+                  <a href="#">Tingnan Zhang</a
+                  ><sup>1</sup>,
+                </span>
+                <span class="author-block">
+                  <a href="https://dorsa.fyi/">Dorsa Sadigh</a><sup>1,3</sup>,
+                </span>
+                <span class="author-block">
+                  <a href="https://fxia22.github.io/">Fei Xia</a><sup>1</sup>
+                </span>
+              </div>
+              <div>
+                <sup>†</sup> Work done while interning at Google DeepMind.
+              </div>
+
+              <br />
+              <div class="is-size-5 publication-authors">
+                <ul class="affiliation-list">
+                  <li class="affiliation">
+                    <img
+                      src="./static/images/deepmind.jpg"
+                      alt="DeepMind Logo"
+                      class="logo"
+                    />
+                    <span class="author-block"
+                      ><sup>1</sup>Google DeepMind</span
+                    >
+                  </li>
+                  <li class="affiliation">
+                    <img
+                      src="./static/images/penn.jpg"
+                      alt="Penn Logo"
+                      class="logo"
+                    />
+                    <span class="author-block"><sup>2</sup>University of Pennsylvania</span>
+                  </li>
+                  <li class="affiliation">
+                    <img
+                      src="./static/images/stanford.jpg"
+                      alt="Stanford Logo"
+                      class="logo"
+                    />
+                    <span class="author-block"
+                      ><sup>3</sup>Stanford University</span
+                    >
+                  </li>
+                </ul>
+                <br>
+              </div>
+              <br />
+              <div class="column has-text-centered">
+                <div class="publication-links">
+                  <span class="link-block">
+                    <a
+                      href="./gvl.pdf"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                      </span>
+                      <span>Paper</span>
+                    </a>
+                  </span>
+                  <span class="link-block">
+                    <a
+                      href="#online-demo"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-robot"></i>
+                      </span>
+                      <span>Online Demo</span>
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    [[frame-viewer]]
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <!-- Abstract. -->
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3">Abstract</h2>
+            <div class="content has-text-justified">
+              Predicting temporal progress from visual trajectories is important for intelligent robots that can learn, adapt, and improve.
+              
+              However, learning such progress estimator, or temporal value function, across different tasks and domains requires both a large amount of diverse data and methods which can scale and generalize.
+              
+              To address these challenges, we present Generative Value Learning (GVL), a universal value function estimator that leverages the world knowledge embedded in vision-language models (VLMs) to predict task progress.
+              
+              Naively asking a VLM to predict values for a video sequence performs poorly due to the strong temporal correlation between successive frames. Instead, GVL poses value estimation as a temporal ordering problem over shuffled video frames; this seemingly more challenging task encourages VLMs to more fully exploit their underlying semantic and temporal grounding capabilities to differentiate frames based on their perceived task progress, consequently producing significantly better value predictions.
+              
+              Without any robot or task specific training, GVL can in-context zero-shot and few-shot predict effective values for more than 300 distinct real-world tasks across diverse robot platforms, including challenging bimanual manipulation tasks.
+              
+              Furthermore, we demonstrate that GVL permits flexible multi-modal in-context learning via examples from heterogeneous tasks and embodiments, such as human videos.
+              
+              The generality of GVL enables various downstream applications pertinent to visuomotor policy learning, including dataset filtering, success detection, and value-weighted regression -- all without any model training or finetuning.
+              <!--/ Abstract. -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="hr"></div>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-full-width has-text-justified">
+            <h2 class="title is-3 has-text-centered">Method Overview</h2>
+
+            <h3 class="title is-4">In-Context Value Learning as Temporal Ordering </h3>
+            <div class="content has-text-justified">
+              <p>
+                GVL auto-regressively predicts task completion percentage over shuffled frames, enabling impressive
+in-context value learning. GVL can effectively zero-shot and few-shot predict task progress on diverse and
+challenging real-world tasks; these capabilities enable expansive set of downstream applications, including
+dataset filtering, success detection, and policy learning.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <video
+                class="inline-figure-six"
+                autoplay
+                loop
+                muted
+                >
+                <source src="./static/videos/concept.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="hr"></div>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-full-width has-text-justified">
+            <h2 class="title is-3 has-text-centered">Experiments</h2>
+
+            <div class="content has-text-justified">
+              <p>
+                Through extensive benchmark, we found our proposed framework can
+                significantly enhance the ability of visual language models in
+                performing different types of spatial reasoning like humans, as
+                well as unlocking novel downstream applications such as
+                robotics.
+              </p>
+            </div>
+            <h3 class="title is-4">Evaluation Metric: Value-Order Correlation</h3>
+
+            <div class="content has-text-justified">
+              <p>
+                We introduce a lightweight, yet predictive method for evaluating value models at scale on real-world robotic datasets: Value-Order
+Correlation (VOC). This metric computes the rank correlation between the predicted values and the
+chronological order of the input expert video:
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/icv/voc.png"
+                class="inline-figure-six"
+                alt="value-order correlation."
+                height="auto"
+                width="600px"
+              />
+            </div>
+            <div class="content has-text-justified">
+              <p>
+                VOC ranges from −1 to 1, where 1 indicates that the two orderings are perfectly aligned. Expert
+                quality demonstrations, by construction, have values that monotonically increase with time, and
+                thus a good value model should have high VOC scores when evaluated on expert videos. On the
+                other hand, fixing a good value model, low-quality trajectories should have low VOC scores. This
+                is because sub-optimal trajectories often contain high repetition of visually similar frames due to
+                the presence of redundant, re-attempt actions or poorly-placed cameras. As such, the values along
+                the trajectories should not be monotonic, resulting in low correlation with the ground-truth timestep
+                order.              </p>
+            </div>
+          
+            <h3 class="title is-4">GVL Demonstrates Multi-Modal In-Context Learning Capabilities</h3>
+
+            <div class="content has-text-justified">
+              <p>
+                GVL demonstrates appealing in-context scaling as the average VOC
+score steadily improves as we increase the number of in-context examples. Even with 5 in-context
+trajectories, meaning 150 total shuffled images, GVL is able to utilize its full context and exhibit
+strong generalization. This result demonstrates how state-of-art long-context-window VLMs, such as
+Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions with impressive test-time improvement capability, quickly mastering value predictions with minimal supervision.              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/icv/icl.png"
+                class="inline-figure-six"
+                alt="in-context learning."
+              />
+            </div>
+
+            <h3 class="title is-4">Cross-Embodiment and Cross-Task In-Context Learning</h3>
+            <div class="content has-text-justified">
+              <p>
+                Examples in-context are not limited to robot demon-strations. One advantage of GVL is that it can still benefit from in-context learning even when thedemonstrations come from a different embodiment. Specifically, we record humans performing thesame tasks as the ALOHA robot demonstrations and then use these human demonstrations as in-context examples for value prediction.
+                As shown, GVL with one cross-embodiment in-contextexample can effectively improve over its zero-shot counterpart. In the Appendix, we also show thatGVL can similarly benefit fromcross-taskin-context learning. In conclusion, GVL presents a versatileframework for in-context value learning that can scale up to even the most challenging manipulation tasks.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/icv/human_videos.png"
+                class="inline-figure-six"
+                alt="chain of thought spatial reasoning"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="hr"></div>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-full-width has-text-justified">
+            <h2 class="title is-3 has-text-centered">Downstream Applications</h2>
+            <h3 class="title is-4">Dataset Quality Estimation</h3>
+            <div class="content has-text-justified">
+              <p>
+                We demonstrate that GVL's VOC scores can be used to estimate dataset quality. For each dataset in OXE,
+                we compute the average VOC score for its sampled trajectories and present the ranking of the average scores.
+                The full results are presented in paper Appendix. Here, we present a subset of selected representative large-scale datasets in
+                OXE. We see that datasets have large spread in their VOC scores, but these scores are interpretable
+                and match human intuitions. Specifically, datasets collected from human teleoperators with relative
+                fixed camera placements, such as RT-1 (Brohan et al., 2022), Dobb-E (Shafiullah et al., 2023), and
+                Bridge (Ebert et al., 2021; Walke et al., 2023), have high VOC scores, despite their diversity in
+                scenes and tasks. In contrast, datasets with autonomous data collection via scripted motions or motor
+                babbling, such as QT-OPT (Kalashnikov et al., 2018) and RoboNet (Dasari et al., 2019), contain high
+                number of suboptimal trajectories that do not exhibit smooth temporal structure to be re-shuffled.
+              </p>
+            </div>
+            <div class="columns">
+              <div class="column is-half">
+                <div class="content has-text-centered">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Dataset</th>
+                        <th style="text-align: right">Avg. VOC</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><span class="dataset-name">RT-1</span> <span class="citation">(<a href="https://arxiv.org/abs/2212.06817">Brohan et al., 2022</a>)</span></td>
+                        <td class="metric">0.74</td>
+                      </tr>
+                      <tr>
+                        <td><span class="dataset-name">Dobb-E</span> <span class="citation">(<a href="https://arxiv.org/abs/2311.16098">Shafiullah et al., 2023</a>)</span></td>
+                        <td class="metric">0.53</td>
+                      </tr>
+                      <tr>
+                        <td><span class="dataset-name">Bridge</span> <span class="citation">(<a href="https://arxiv.org/abs/2308.12952">Walke et al., 2023</a>)</span></td>
+                        <td class="metric">0.51</td>
+                      </tr>
+                      <tr>
+                        <td><span class="dataset-name">QT-OPT</span> <span class="citation">(<a href="https://arxiv.org/abs/1806.10293">Kalashnikov et al., 2018</a>)</span></td>
+                        <td class="metric">0.19</td>
+                      </tr>
+                      <tr>
+                        <td><span class="dataset-name">DROID</span> <span class="citation">(<a href="https://arxiv.org/abs/2403.12945">Khazatsky et al., 2024</a>)</span></td>
+                        <td class="metric">-0.01</td>
+                      </tr>
+                      <tr>
+                        <td><span class="dataset-name">RoboNet</span> <span class="citation">(<a href="https://arxiv.org/abs/1910.11215">Dasari et al., 2019</a>)</span></td>
+                        <td class="metric">-0.85</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="column is-half">
+                <div id="vocPlot"></div>
+                <script>
+                  const data = [{
+                    x: ['RT-1', 'Dobb-E', 'Bridge', 'QT-OPT', 'DROID', 'RoboNet'],
+                    y: [0.74, 0.53, 0.51, 0.19, -0.01, -0.85],
+                    type: 'bar',
+                    marker: {
+                      color: ['#1f77b4', '#1f77b4', '#1f77b4', '#ff7f0e', '#ff7f0e', '#ff7f0e']
+                    }
+                  }];
+                  const layout = {
+                    title: 'Dataset VOC Scores',
+                    xaxis: {title: 'Dataset'},
+                    yaxis: {title: 'Avg. VOC Score'},
+                    margin: {t: 30},
+                    height: 300
+                  };
+                  Plotly.newPlot('vocPlot', data, layout);
+                </script>
+              </div>
+            </div>
+
+            <h3 class="title is-4">Success Detection and Filtered BC</h3>
+            <div class="content has-text-justified">
+              <p>
+              The VOC score can be used as a threshold score for success detection. The resulting success detection method, GVL-SD, substantially outperforms SuccessVQA using the same VLM on all evaluation metrics. Furthermore, filtered BC with GVL-SD always outperforms the base imitation learning algorithm (ACT) regardless of the threshold value.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+             
+              <body>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Method</th>
+                      <th class="metric">Accuracy</th>
+                      <th class="metric">Precision</th>
+                      <th class="metric">Recall</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="method-name">GVL-SD (Zero-Shot)</td>
+                      <td class="metric">0.71</td>
+                      <td class="metric">0.71</td>
+                      <td class="metric">0.71</td>
+                    </tr>
+                    <tr>
+                      <td class="method-name">GVL-SD (One-Shot)</td>
+                      <td class="metric bold-metric">0.75</td>
+                      <td class="metric bold-metric">0.85</td>
+                      <td class="metric">0.70</td>
+                    </tr>
+                    <tr>
+                      <td class="method-name">SuccessVQA <span class="citation">(<a href="https://arxiv.org/abs/2303.07280">Du et al., 2023</a>)</span></td>
+                      <td class="metric">0.62</td>
+                      <td class="metric">0.33</td>
+                      <td class="metric">0.73</td>
+                    </tr>
+                    <tr>
+                      <td class="method-name">SuccessVQA-CoT</td>
+                      <td class="metric">0.63</td>
+                      <td class="metric">0.44</td>
+                      <td class="metric">0.68</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </body>
+              <img
+              src="./static/images/icv/filtered_bc.png"
+              class="inline-figure-four-thirds"
+              alt="Comparison with baselines."
+            />
+            </div>
+            <div class="content has-text-justified">
+              <p>
+                Qualitatively, we indeed see that GVL assigns much higher scores to successful trajectories than failure trajectories; in contrast, removing the shuffling mechanism in GVL significantly reduces its discriminability on failure trajectories.
+              </p>
+            </div>
+
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/icv/success_detection_sim.png"
+                class="inline-figure-four-thirds"
+                alt="Comparison with baselines."
+              />
+            </div>
+            <h3 class="title is-4">Real-World Advantage-Weighted Regression</h3>
+
+            <div class="content has-text-justified">
+              <p>
+                We illustrate how
+                GVL can assign importance weights to individual transitions within trajectories at a fine-grained
+                level akin to offline reinforcement learning. For these experiments we use real-world demonstration
+                data collected by human teleoperation on bi-manual ALOHA robot setups. Unlike simulation, our
+                datasets only contain successful task executions but can be sub-optimal and multi-modal. Thus, we
+                directly utilize GVL’s values with advantage weighted regression (AWR) (Peters & Schaal, 2007;
+                Peng et al., 2019), in which we weight each individual transition by the estimated advantange, or
+                GVL value difference for that step:
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img
+                src="./static/images/icv/awr.png"
+                class="inline-figure-four-thirds"
+                alt="reward heatmap."
+                height="auto"
+                width="500px"
+              />
+             <table>
+    <thead>
+      <tr>
+        <th>Real-World ALOHA Tasks</th>
+        <th class="metric">GVL + DP</th>
+        <th class="metric">DP</th>
+        <th class="metric">Avg. VOC</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="task-name">bowl-in-rack</td>
+        <td class="metric bold-metric">7/10</td>
+        <td class="metric">6/10</td>
+        <td class="metric">0.57</td>
+      </tr>
+      <tr>
+        <td class="task-name">banana-handover</td>
+        <td class="metric bold-metric">7/10</td>
+        <td class="metric">5/10</td>
+        <td class="metric">0.73</td>
+      </tr>
+      <tr>
+        <td class="task-name">close-laptop</td>
+        <td class="metric bold-metric">9/10</td>
+        <td class="metric">6.5/10</td>
+        <td class="metric">0.59</td>
+      </tr>
+      <tr>
+        <td class="task-name">open-drawer</td>
+        <td class="metric">4/10</td>
+        <td class="metric bold-metric">6/10</td>
+        <td class="metric">0.09</td>
+      </tr>
+      <tr>
+        <td class="task-name">remove-gears</td>
+        <td class="metric">4.67/10</td>
+        <td class="metric bold-metric">7/10</td>
+        <td class="metric">0.19</td>
+      </tr>
+      <tr>
+        <td class="task-name">pen-handover</td>
+        <td class="metric bold-metric">1.5/10</td>
+        <td class="metric">0/10</td>
+        <td class="metric">0.43</td>
+      </tr>
+      <tr>
+        <td class="task-name">fold-dress</td>
+        <td class="metric bold-metric">7/10</td>
+        <td class="metric bold-metric">7/10</td>
+        <td class="metric">0.66</td>
+      </tr>
+    </tbody>
+  </table>
+            <img
+            src="./static/images/icv/real_world_tasks.png"
+            class="inline-figure-four-thirds"
+            alt="reward heatmap."
+            height="auto"
+            width="700px"
+          />
+            </div>
+            <div class="content has-text-justified">
+              <p>
+              We use diffusion policy (DP) as the policy backbone (Chi et al., 2023) for each task, and compare
+              training diffusion policies with GVL (One-Shot) advantage weighting or lack thereof. We evaluate on
+              7 tasks with 10 trials per task and report success rate in Table 3. As can be seen, on a majority tasks,
+              GVL-DP outperforms DP and we see a clear correlation between improvement over DP and the VOC
+              score. That is, when the value predictions are of high quality as judged by VOC, policy learning
+              can benefit from GVL value weighting. On open-drawer and remove-gears, the top-down
+              view does not provide sufficient resolution to distinguish task progress (see Fig. 8), as a consequence,
+              the value predictions can be noisy, which can hurt policy learning. However, given the in-context
+              learning results, we believe that it is possible to improve policy learning even on difficult tasks with
+              non-ideal camera viewpoints.   
+                </p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="title is-4">Qualitative Results</h3>
+        <div class="content has-text-justified">
+          <p>
+            We show qualitative results on several robotic manipulation tasks below trained with Advantage-Weighted Regression. For each task, we show both successful and failed attempts.
+          
+         
+
+          <div class="demo-container">
+            <select class="task-select" id="taskSelect">
+              <option value="fold-dress">Fold Dress</option>
+              <option value="open-drawer">Open Drawer</option>
+              <option value="banana-handover">Banana Handover</option>
+              <option value="remove-gears">Remove Gears</option>
+              <option value="close-laptop">Close Laptop</option>
+              <option value="open-jar-lid">Open Jar Lid</option>
+            </select>
+            <div class="status-container">
+              <div class="status success">Success</div>
+              <div class="status fail">Fail</div>
+            </div>
+          </div>
+          <div class="video-area" id="videoArea">
+            <video id="demoVideo" width="100%" controls autoplay muted loop>
+              <source src="./static/videos/converted/fold-dress/success.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay">
+              autonomous, 1x speed
+            </div>
+          </div>
+
+          <script>
+            const taskSelect = document.getElementById('taskSelect');
+            const demoVideo = document.getElementById('demoVideo');
+            const successStatus = document.querySelector('.success');
+            const failStatus = document.querySelector('.fail');
+
+            taskSelect.addEventListener('change', (e) => {
+              const task = e.target.value;
+              demoVideo.src = `./static/videos/converted/${task}/success.mp4`;
+              // Reset status styling to success state when task changes
+              successStatus.style.background = '#000';
+              successStatus.style.color = 'white';
+              failStatus.style.background = 'white'; 
+              failStatus.style.color = 'black';
+            });
+
+            successStatus.addEventListener('click', () => {
+              const task = taskSelect.value;
+              demoVideo.src = `./static/videos/converted/${task}/success.mp4`;
+              successStatus.style.background = '#000';
+              successStatus.style.color = 'white';
+              failStatus.style.background = 'white';
+              failStatus.style.color = 'black';
+            });
+
+            failStatus.addEventListener('click', () => {
+              const task = taskSelect.value;
+              demoVideo.src = `./static/videos/converted/${task}/fail.mp4`;
+              failStatus.style.background = '#000';
+              failStatus.style.color = 'white';
+              successStatus.style.background = 'white';
+              successStatus.style.color = 'black';
+            });
+          </script>
+          </script>
+        </div>
+
+      </div>
+      
+    </section>
+    [[online-demo]]
+    
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-full-width has-text-justified">
+            <h2 class="title is-3 has-text-centered">Acknowledgement</h2>
+            <div class="content has-text-justified">
+              <p>
+                We thank Jie Tan, Pannag Sanketi, Oliver Groth, and the rest the Google DeepMind Robotics team for helpful discussions and providing feedback on the paper.              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="hr"></div>
+    <section class="section" id="BibTeX">
+      <div class="container is-max-desktop content">
+        <h2 class="title has-text-centered">BibTeX</h2>
+        <pre style="width: 100%;"><code>@preprint{ma2024generative,
+    author    = {Ma, Yecheng Jason and Hejna, Joey and Wahid, Ayzaan and Fu, Chuyuan and Shah, Dhruv and Liang, Jacky and Xu, Zhuo and Kirmani, Sean and Xu, Peng and Driess, Danny and Xiao, Ted and Tompson, Jonathan and Bastani, Osbert and Jayaraman, Dinesh and Yu, Wenhao and Zhang, Tingnan and Sadigh, Dorsa and Xia, Fei},
+    title     = {Vision Language Models are In-Context Value Learners},
+    booktitle = {preprint},
+    year      = {2024}
+}</code></pre>
+        <div class="has-text-left mt-2">
+          <button class="button is-small is-light" onclick="navigator.clipboard.writeText(document.querySelector('#BibTeX pre code').textContent)">
+            <span class="icon is-small">
+              <i class="fas fa-copy"></i>
+            </span>
+          </button>
+        </div>
+      </div>
+
+
+    </section>
+  </body>
+</html>
