@@ -161,11 +161,18 @@
                             <p>After receiving the response, you can click "Parse Response" to see the predicted task completion percentage for each frame of query video. You can toggle back to GT order to examine the predicted value function as well as the caption.</p>
                         </div>
                         <div style="display: flex; justify-content: center; gap: 1rem; margin: 1rem 0;">
-                            <div style="position: relative; display: inline-block; cursor: pointer;" onclick="loadExampleVideo()">
-                                <img src="./static/examples/marker_cap.png" style="max-width: 300px;">
+                            <div style="position: relative; display: inline-block; cursor: pointer;" onclick="loadExampleVideo('marker')">
+                                <img src="./static/examples/marker_cap.png" style="max-width: 300px; height: 200px; object-fit: cover;">
                                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                                             background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;">
                                     Remove Cap of Marker Example
+                                </div>
+                            </div>
+                            <div style="position: relative; display: inline-block; cursor: pointer;" onclick="loadExampleVideo('phone')">
+                                <img src="./static/examples/take_phone_out.png" style="max-width: 300px; height: 200px; object-fit: cover;">
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                            background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;">
+                                    Cross Embodiedment Example
                                 </div>
                             </div>
                         </div>
@@ -283,20 +290,28 @@
                         return null;
                     }
 
-                    async function loadExampleVideo() {
-                        const referenceVideoPath = './static/examples/marker_cap1.webm';
-                        const queryVideoPath = './static/examples/marker_cap2.webm';
-                        const taskDesc = 'Remove the cap of the marker';
+                    async function loadExampleVideo(type) {
+                        let referenceVideoPath, queryVideoPath, taskDesc;
+                        
+                        if (type === 'marker') {
+                            referenceVideoPath = './static/examples/marker_cap1.webm';
+                            queryVideoPath = './static/examples/marker_cap2.webm';
+                            taskDesc = 'Remove the cap of the marker';
+                        } else if (type === 'phone') {
+                            referenceVideoPath = './static/examples/take_phone_out.mp4';
+                            queryVideoPath = './static/examples/take_phone_out.webm';
+                            taskDesc = 'Take the phone out of the wallet';
+                        }
                             
                         // Load reference video
                         const refResponse = await fetch(referenceVideoPath);
                         const refBlob = await refResponse.blob();
-                        const refFile = new File([refBlob], 'marker_cap1.webm', { type: 'video/webm' });
+                        const refFile = new File([refBlob], referenceVideoPath.split('/').pop(), { type: 'video/*' });
                         
                         // Load query video
                         const queryResponse = await fetch(queryVideoPath);
                         const queryBlob = await queryResponse.blob();
-                        const queryFile = new File([queryBlob], 'marker_cap2.webm', { type: 'video/webm' });
+                        const queryFile = new File([queryBlob], queryVideoPath.split('/').pop(), { type: 'video/*' });
 
                         // Create DataTransfer objects and add files
                         const refDataTransfer = new DataTransfer();
@@ -315,7 +330,6 @@
                         // Set the task description
                         document.getElementById('gvl-task-description').value = taskDesc;
                     }
-            
                     function parseResponse() {
                         const resultDiv = document.getElementById('gvl-result');
                         const errorDiv = document.getElementById('gvl-error');
