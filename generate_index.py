@@ -18,13 +18,16 @@ def main():
     # Load component files
     gemini_path = os.path.join(template_dir, 'gemini.html')
     frame_viewer_path = os.path.join(template_dir, 'json-frame-viewer.html')
+    qa_path = os.path.join(template_dir, 'qa.html')
     
     gemini_content = load_file(gemini_path)
     frame_viewer_content = load_file(frame_viewer_path)
+    qa_content = load_file(qa_path)
     
     # Replace placeholders
     output = template.replace('[[online-demo]]', gemini_content)
     output = output.replace('[[frame-viewer]]', frame_viewer_content)
+    output = output.replace('[[qa]]', qa_content)
     
     # Write output file
     output_path = os.path.join(template_dir, 'index.html')
