@@ -175,16 +175,16 @@
                             </p>
                             <p>After receiving the response, you can click "Parse Response" to see the predicted task completion percentage for each frame. You can toggle back to GT order to examine the predicted value function as well as the caption.</p>
                             <p>Or click one of the examples below to try:</p>
-                            <div style="display: flex; gap: 20px; justify-content: center;">
+                            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
                                 <div style="position: relative; display: inline-block; cursor: pointer;" onclick="loadExampleVideo('dress')">
-                                    <img src="./static/examples/dress.png" style="max-width: 300px;">
+                                    <img src="./static/examples/dress.png" style="max-width: 300px; width: 100%;">
                                     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                                                 background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;">
                                         Folding Dress Example
                                     </div>
                                 </div>
                                 <div style="position: relative; display: inline-block; cursor: pointer;" onclick="loadExampleVideo('glass')">
-                                    <img src="./static/examples/glass_on_rack.png" style="max-width: 300px;">
+                                    <img src="./static/examples/glass_on_rack.png" style="max-width: 300px; width: 100%;">
                                     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                                                 background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;">
                                         Glass on Rack Example
@@ -241,8 +241,8 @@
                     let isOrdered = true; // Start with GT order
 
                     async function loadExampleVideo(type) {
-                        const videoPath = type === 'dress' ? './static/examples/dress.webm' : './static/examples/glass_on_rack.mp4';
-                        const fileName = type === 'dress' ? 'dress.webm' : 'glass_on_rack.mp4';
+                        const videoPath = type === 'dress' ? './static/examples/dress.webm' : './static/examples/glass_on_rack.webm';
+                        const fileName = type === 'dress' ? 'dress.webm' : 'glass_on_rack.webm';
                         const taskDesc = type === 'dress' ? 
                             'Fold the black dress into a small square' : 
                             'Place the glass on the drying rack';

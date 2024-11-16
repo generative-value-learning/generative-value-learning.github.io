@@ -50,7 +50,6 @@
     <script defer src="./static/js/fontawesome.all.min.js"></script>
     <script src="./static/js/bulma-carousel.min.js"></script>
     <script src="./static/js/bulma-slider.min.js"></script>
-    <script src="./static/js/index.js"></script>
     <style>
       * {
         font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -171,6 +170,34 @@
         padding: 8px 12px;
         border-radius: 4px;
         font-size: 14px;
+      }
+
+      .audio-button {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .audio-progress {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .audio-progress-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: width 0.1s linear;
+      }
+
+      .audio-controls {
+        display: inline-flex;
+        gap: 8px;
       }
     </style>
   </head>
@@ -329,16 +356,30 @@
                     </a>
                   </span>
                   <span class="link-block">
-                    <a
-                      onclick="document.getElementById('audio-player').play()"
-                      class="external-link button is-normal is-rounded is-dark"
-                    >
-                      <span class="icon">
-                        <i class="fas fa-headphones"></i>
-                      </span>
-                      <span>Listen to this paper</span>
-                    </a>
-                  </span>
+                    <div class="audio-controls">
+                      <a
+                        id="audio-button"
+                        class="external-link button is-normal is-rounded is-dark audio-button"
+                      >
+                        <div class="audio-progress">
+                          <div class="audio-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="icon">
+                          <i class="fas fa-headphones"></i>
+                        </span>
+                        <span>Listen to this paper</span>
+                      </a>
+                      <a
+                        id="audio-play-button" 
+                        class="external-link button is-normal is-rounded is-dark"
+                        style="display: none;"
+                      >
+                        <span class="icon">
+                          <i class="fas fa-play"></i>
+                          <i class="fas fa-pause" style="display: none;"></i>
+                        </span>
+                      </a>
+                    </div>
                   </span>
                 </div>
               </div>
@@ -347,11 +388,98 @@
         </div>
       </div>
     </section>
-    <div> <audio id="audio-player" style="display:none">
-      <source src="static/gvl.mp3" type="audio/wav">
-    </audio></div>
+    <div> 
+      <audio id="audio-player" style="display:none">
+        <source src="static/gvl.mp3" type="audio/wav">
+      </audio>
+      <script>
+        const audioPlayer = document.getElementById('audio-player');
+        const audioButton = document.getElementById('audio-button');
+        const audioPlayButton = document.getElementById('audio-play-button');
+        const progressFill = document.querySelector('.audio-progress-fill');
+        let firstClick = true;
+        let isDragging = false;
+        
+        // Helper function to update play/pause icon
+        function updatePlayPauseIcon(isPaused) {
+          const playIcon = document.querySelector('#audio-play-button .fa-play');
+          const pauseIcon = document.querySelector('#audio-play-button .fa-pause');
+          if (playIcon && pauseIcon) {
+            playIcon.style.display = isPaused ? 'inline-block' : 'none';
+            pauseIcon.style.display = isPaused ? 'none' : 'inline-block';
+          }
+        }
+
+        audioButton.addEventListener('click', () => {
+          if (firstClick) {
+            firstClick = false;
+            audioPlayButton.style.display = 'inline-block';
+            audioPlayer.currentTime = 0;
+            audioPlayer.play();
+            updatePlayPauseIcon(false);
+          }
+        });
+
+        audioPlayButton.addEventListener('click', () => {
+          if (audioPlayer.paused) {
+            audioPlayer.play();
+            updatePlayPauseIcon(false);
+          } else {
+            audioPlayer.pause(); 
+            updatePlayPauseIcon(true);
+          }
+        });
+
+        function updateAudioProgress(e) {
+          if (!firstClick && (isDragging || e.type === 'mousedown')) {
+            const rect = audioButton.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percent = Math.min(Math.max((x / rect.width) * 100, 0), 100);
+            audioPlayer.currentTime = (percent / 100) * audioPlayer.duration;
+            progressFill.style.width = percent + '%';
+          }
+        }
+
+        audioButton.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          updateAudioProgress(e);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+          if (isDragging) {
+            updateAudioProgress(e);
+          }
+        });
+
+        document.addEventListener('mouseup', () => {
+          isDragging = false;
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+          if (!isDragging) {
+            const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            if (progressFill) {
+              progressFill.style.width = percent + '%';
+            }
+          }
+        });
+
+        audioPlayer.addEventListener('play', () => {
+          if (!firstClick) {
+            updatePlayPauseIcon(false);
+          }
+        });
+
+        audioPlayer.addEventListener('pause', () => {
+          if (!firstClick) {
+            updatePlayPauseIcon(true);
+          }
+        });
+      </script>
+    </div>
     <section id="json-frame-viewer" class="container">
     <h2 class="title is-3 has-text-centered">Interactive Illustration</h2>
+    <p class="has-text-centered">GVL Zero-Shot results on OXE and 250 challenging bimanual tasks. Explore task completion predictions and frame-by-frame analysis across diverse robotic manipulation scenarios.</p>
     <head>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <style>
@@ -465,6 +593,9 @@
         <div class="upload-container">
             <select id="json-frame-fileSelect">
                 <option value="">Select a task...</option>
+                <optgroup label="ALOHA LONG HORIZON">
+                    <option value="hang-tshirt">Hang T-shirt</option>
+                </optgroup>
                 <optgroup label="ALOHA">
                     <option value="bowl-in-rack">Bowl in Rack</option>
                     <option value="close-laptop">Close Laptop</option>
@@ -482,6 +613,9 @@
                 <optgroup label="PI_0">
                   <option value="pi_assemble_a_box">Assemble a Box</option>
                   <option value="pi_bring_and_fold_laundry">Bring and Fold Laundry</option>
+                </optgroup>
+                <optgroup label="UMI">
+                    <option value="umi_put_pan_on_saucer">Put Mug on Saucer</option>
                 </optgroup>
                 <optgroup label="Navigation">
                   <option value="navigation_navigate_to_bedroom">Navigate to Bedroom</option>
@@ -505,7 +639,7 @@
                     <option value="dobbe">Dobbe</option>
                     <option value="droid">DROID</option>
                     <option value="fmb">FMB</option>
-                    <option value="fractal">Fractal</option>
+                    <option value="fractal">RT-1</option>
                     <option value="iamlab">IAMLab CMU Pickup Insert</option>
                     <option value="imperial">Imperial College Sawyer</option>
                     <option value="jaco">JACO Play</option>
@@ -797,6 +931,12 @@
                 ],
                 'navigation_navigate_to_downstairs': [
                     'navigation_navigate_to_downstairs.json'
+                ],
+                'hang-tshirt': [
+                    'aloha_long_horizon_hang_tshirt.json'
+                ],
+                'umi_put_pan_on_saucer': [
+                    'umi_put_pan_on_saucer.json'
                 ]
             };
     
@@ -1601,16 +1741,16 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                             </p>
                             <p>After receiving the response, you can click "Parse Response" to see the predicted task completion percentage for each frame. You can toggle back to GT order to examine the predicted value function as well as the caption.</p>
                             <p>Or click one of the examples below to try:</p>
-                            <div style="display: flex; gap: 20px; justify-content: center;">
+                            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
                                 <div style="position: relative; display: inline-block; cursor: pointer;" onclick="loadExampleVideo('dress')">
-                                    <img src="./static/examples/dress.png" style="max-width: 300px;">
+                                    <img src="./static/examples/dress.png" style="max-width: 300px; width: 100%;">
                                     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                                                 background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;">
                                         Folding Dress Example
                                     </div>
                                 </div>
                                 <div style="position: relative; display: inline-block; cursor: pointer;" onclick="loadExampleVideo('glass')">
-                                    <img src="./static/examples/glass_on_rack.png" style="max-width: 300px;">
+                                    <img src="./static/examples/glass_on_rack.png" style="max-width: 300px; width: 100%;">
                                     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                                                 background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px;">
                                         Glass on Rack Example
@@ -1667,8 +1807,8 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
                     let isOrdered = true; // Start with GT order
 
                     async function loadExampleVideo(type) {
-                        const videoPath = type === 'dress' ? './static/examples/dress.webm' : './static/examples/glass_on_rack.mp4';
-                        const fileName = type === 'dress' ? 'dress.webm' : 'glass_on_rack.mp4';
+                        const videoPath = type === 'dress' ? './static/examples/dress.webm' : './static/examples/glass_on_rack.webm';
+                        const fileName = type === 'dress' ? 'dress.webm' : 'glass_on_rack.webm';
                         const taskDesc = type === 'dress' ? 
                             'Fold the black dress into a small square' : 
                             'Place the glass on the drying rack';
@@ -2050,6 +2190,133 @@ Now, for the task of *${taskDescription}*, output the task completion percentage
         </div>
     </section>  
 
+
+        <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-full-width">
+            <h2 class="title is-3 has-text-centered">Ask Questions About the Paper</h2>
+            <div class="content">
+              <div class="field">
+                <div class="control">
+                  <textarea class="textarea" id="paperQuestion" placeholder="Ask a question about the paper..."></textarea>
+                </div>
+              </div>
+              <div class="field">
+                <div class="control">
+                  <button class="button is-primary" id="askButton" onclick="askAboutPaper()">Ask Question</button>
+                </div>
+              </div>
+              <div id="questionProgress" style="display: none;">
+                <progress class="progress is-small is-primary" max="100">15%</progress>
+              </div>
+              <div id="questionError" class="notification is-danger" style="display: none;"></div>
+              <div id="questionResult" class="box content markdown-body"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Add marked.js for markdown rendering
+      const script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
+      document.head.appendChild(script);
+
+      async function askAboutPaper() {
+        const questionDiv = document.getElementById('paperQuestion');
+        const progressDiv = document.getElementById('questionProgress');
+        const errorDiv = document.getElementById('questionError');
+        const resultDiv = document.getElementById('questionResult');
+        const askButton = document.getElementById('askButton');
+
+        if (!questionDiv.value.trim()) {
+          errorDiv.style.display = 'block';
+          errorDiv.textContent = 'Please enter a question';
+          return;
+        }
+
+        try {
+          progressDiv.style.display = 'block';
+          errorDiv.style.display = 'none';
+          resultDiv.innerHTML = '';
+          askButton.disabled = true;
+
+          const pageContent = document.documentElement.innerText;
+          const apiKeyInput = document.getElementById('gvl-api-key');
+          const apiKey = apiKeyInput.value.trim();
+
+          if (!apiKey) {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = 'Please enter an API key';
+            progressDiv.style.display = 'none';
+            askButton.disabled = false;
+            return;
+          }
+          const parts = [{
+            text: `Context about the paper:\n${pageContent}\n\nQuestion: ${questionDiv.value}\n\nPlease answer the question based on the paper content provided above. You can use markdown formatting in your response.`
+          }];
+          console.log('Parts:', parts);
+
+          const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:streamGenerateContent?alt=sse&key=${apiKey}`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                contents: [{
+                  parts: parts
+                }]
+              })
+            }
+          );
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          let fullResponse = '';
+
+          while (true) {
+            const {value, done} = await reader.read();
+            if (done) break;
+            
+            buffer += decoder.decode(value, {stream: true});
+            
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(5);
+                if (data === '[DONE]') continue;
+                
+                try {
+                  const parsed = JSON.parse(data);
+                  const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                  fullResponse += text;
+                  // Render markdown as it streams in
+                  resultDiv.innerHTML = marked.parse(fullResponse);
+                } catch (e) {
+                  console.error('Error parsing SSE message:', e);
+                }
+              }
+            }
+          }
+
+        } catch (error) {
+          errorDiv.style.display = 'block';
+          errorDiv.textContent = `Error: ${error.message}`;
+          resultDiv.innerHTML = '';
+        } finally {
+          progressDiv.style.display = 'none';
+          askButton.disabled = false;
+        }
+      }
+    </script>
+
     
     <section class="section">
       <div class="container is-max-desktop">
@@ -2069,6 +2336,7 @@ Now, for the task of *${taskDescription}*, output the task completion percentage
     <section class="section" id="BibTeX">
       <div class="container is-max-desktop content">
         <h2 class="title has-text-centered">BibTeX</h2>
+        <a href="https://arxiv.org/abs/2411.04549">[arxiv]</a>
         <pre style="width: 100%;"><code>@preprint{ma2024generative,
     author    = {Ma, Yecheng Jason and Hejna, Joey and Wahid, Ayzaan and Fu, Chuyuan and Shah, Dhruv and Liang, Jacky and Xu, Zhuo and Kirmani, Sean and Xu, Peng and Driess, Danny and Xiao, Ted and Tompson, Jonathan and Bastani, Osbert and Jayaraman, Dinesh and Yu, Wenhao and Zhang, Tingnan and Sadigh, Dorsa and Xia, Fei},
     title     = {Vision Language Models are In-Context Value Learners},
@@ -2083,8 +2351,16 @@ Now, for the task of *${taskDescription}*, output the task completion percentage
           </button>
         </div>
       </div>
-
-
     </section>
+
+    <footer class="footer">
+      <div class="container is-max-desktop">
+        <div class="content has-text-centered">
+          <p>
+            <span>©</span> Google DeepMind 2024
+          </p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

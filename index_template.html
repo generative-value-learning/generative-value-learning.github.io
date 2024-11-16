@@ -50,7 +50,6 @@
     <script defer src="./static/js/fontawesome.all.min.js"></script>
     <script src="./static/js/bulma-carousel.min.js"></script>
     <script src="./static/js/bulma-slider.min.js"></script>
-    <script src="./static/js/index.js"></script>
     <style>
       * {
         font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -171,6 +170,34 @@
         padding: 8px 12px;
         border-radius: 4px;
         font-size: 14px;
+      }
+
+      .audio-button {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .audio-progress {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .audio-progress-fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: width 0.1s linear;
+      }
+
+      .audio-controls {
+        display: inline-flex;
+        gap: 8px;
       }
     </style>
   </head>
@@ -320,16 +347,30 @@
                     </a>
                   </span>
                   <span class="link-block">
-                    <a
-                      onclick="document.getElementById('audio-player').play()"
-                      class="external-link button is-normal is-rounded is-dark"
-                    >
-                      <span class="icon">
-                        <i class="fas fa-headphones"></i>
-                      </span>
-                      <span>Listen to this paper</span>
-                    </a>
-                  </span>
+                    <div class="audio-controls">
+                      <a
+                        id="audio-button"
+                        class="external-link button is-normal is-rounded is-dark audio-button"
+                      >
+                        <div class="audio-progress">
+                          <div class="audio-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="icon">
+                          <i class="fas fa-headphones"></i>
+                        </span>
+                        <span>Listen to this paper</span>
+                      </a>
+                      <a
+                        id="audio-play-button" 
+                        class="external-link button is-normal is-rounded is-dark"
+                        style="display: none;"
+                      >
+                        <span class="icon">
+                          <i class="fas fa-play"></i>
+                          <i class="fas fa-pause" style="display: none;"></i>
+                        </span>
+                      </a>
+                    </div>
                   </span>
                 </div>
               </div>
@@ -338,9 +379,95 @@
         </div>
       </div>
     </section>
-    <div> <audio id="audio-player" style="display:none">
-      <source src="static/gvl.mp3" type="audio/wav">
-    </audio></div>
+    <div> 
+      <audio id="audio-player" style="display:none">
+        <source src="static/gvl.mp3" type="audio/wav">
+      </audio>
+      <script>
+        const audioPlayer = document.getElementById('audio-player');
+        const audioButton = document.getElementById('audio-button');
+        const audioPlayButton = document.getElementById('audio-play-button');
+        const progressFill = document.querySelector('.audio-progress-fill');
+        let firstClick = true;
+        let isDragging = false;
+        
+        // Helper function to update play/pause icon
+        function updatePlayPauseIcon(isPaused) {
+          const playIcon = document.querySelector('#audio-play-button .fa-play');
+          const pauseIcon = document.querySelector('#audio-play-button .fa-pause');
+          if (playIcon && pauseIcon) {
+            playIcon.style.display = isPaused ? 'inline-block' : 'none';
+            pauseIcon.style.display = isPaused ? 'none' : 'inline-block';
+          }
+        }
+
+        audioButton.addEventListener('click', () => {
+          if (firstClick) {
+            firstClick = false;
+            audioPlayButton.style.display = 'inline-block';
+            audioPlayer.currentTime = 0;
+            audioPlayer.play();
+            updatePlayPauseIcon(false);
+          }
+        });
+
+        audioPlayButton.addEventListener('click', () => {
+          if (audioPlayer.paused) {
+            audioPlayer.play();
+            updatePlayPauseIcon(false);
+          } else {
+            audioPlayer.pause(); 
+            updatePlayPauseIcon(true);
+          }
+        });
+
+        function updateAudioProgress(e) {
+          if (!firstClick && (isDragging || e.type === 'mousedown')) {
+            const rect = audioButton.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percent = Math.min(Math.max((x / rect.width) * 100, 0), 100);
+            audioPlayer.currentTime = (percent / 100) * audioPlayer.duration;
+            progressFill.style.width = percent + '%';
+          }
+        }
+
+        audioButton.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          updateAudioProgress(e);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+          if (isDragging) {
+            updateAudioProgress(e);
+          }
+        });
+
+        document.addEventListener('mouseup', () => {
+          isDragging = false;
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+          if (!isDragging) {
+            const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            if (progressFill) {
+              progressFill.style.width = percent + '%';
+            }
+          }
+        });
+
+        audioPlayer.addEventListener('play', () => {
+          if (!firstClick) {
+            updatePlayPauseIcon(false);
+          }
+        });
+
+        audioPlayer.addEventListener('pause', () => {
+          if (!firstClick) {
+            updatePlayPauseIcon(true);
+          }
+        });
+      </script>
+    </div>
     [[frame-viewer]]
 
     <section class="section">
@@ -808,6 +935,8 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
       
     </section>
     [[online-demo]]
+
+    [[qa]]
     
     <section class="section">
       <div class="container is-max-desktop">
@@ -827,6 +956,7 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
     <section class="section" id="BibTeX">
       <div class="container is-max-desktop content">
         <h2 class="title has-text-centered">BibTeX</h2>
+        <a href="https://arxiv.org/abs/2411.04549">[arxiv]</a>
         <pre style="width: 100%;"><code>@preprint{ma2024generative,
     author    = {Ma, Yecheng Jason and Hejna, Joey and Wahid, Ayzaan and Fu, Chuyuan and Shah, Dhruv and Liang, Jacky and Xu, Zhuo and Kirmani, Sean and Xu, Peng and Driess, Danny and Xiao, Ted and Tompson, Jonathan and Bastani, Osbert and Jayaraman, Dinesh and Yu, Wenhao and Zhang, Tingnan and Sadigh, Dorsa and Xia, Fei},
     title     = {Vision Language Models are In-Context Value Learners},
@@ -841,8 +971,16 @@ Gemini-1.5-Pro, can be re-purposed to make for general-purpose value functions w
           </button>
         </div>
       </div>
-
-
     </section>
+
+    <footer class="footer">
+      <div class="container is-max-desktop">
+        <div class="content has-text-centered">
+          <p>
+            <span>©</span> Google DeepMind 2024
+          </p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
